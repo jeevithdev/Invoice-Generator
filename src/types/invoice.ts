@@ -73,7 +73,11 @@ export type TemplateId =
   | 'grid'
   | 'bold'
   | 'elegant'
-  | 'dark';
+  | 'dark'
+  | 'retro'
+  | 'pastel'
+  | 'sidebar'
+  | 'monochrome';
 
 export interface InvoiceData {
   invoiceNumber: string;
