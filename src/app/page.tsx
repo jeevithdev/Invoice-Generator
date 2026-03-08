@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useInvoiceStore } from '@/store/invoiceStore';
 import { InvoiceForm } from '@/components/InvoiceForm';
 import { ItemTable } from '@/components/ItemTable';
@@ -25,6 +25,8 @@ export default function InvoiceBuilder() {
   const tax = computeTax();
   const [activeTab, setActiveTab] = useState<PanelTab>('invoice');
   const [zoom, setZoom] = useState(85);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col">
@@ -121,7 +123,11 @@ export default function InvoiceBuilder() {
                 id="invoice-preview-root"
                 style={{ width: 794, boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', outline: '1px solid rgba(0,0,0,0.08)' }}
               >
-                <TemplateRenderer invoice={invoice} tax={tax} />
+                {mounted ? (
+                  <TemplateRenderer invoice={invoice} tax={tax} />
+                ) : (
+                  <div style={{ width: 794, minHeight: 1000, backgroundColor: '#fff' }} />
+                )}
               </div>
             </div>
           </div>

@@ -46,23 +46,24 @@ export function InvoiceForm() {
       <SectionCard title="Invoice Details" icon={<FileText size={16} className="text-indigo-500" />}>
         <div className="grid grid-cols-2 gap-3 mt-3">
           <div className="flex flex-col gap-1">
-            <label className="text-xs font-medium text-slate-600 uppercase tracking-wide">Invoice Number</label>
-            <div className="flex items-center gap-2">
-              <input
-                value={invoice.invoiceNumber}
-                onChange={(e) => updateInvoiceMeta({ invoiceNumber: e.target.value })}
-                placeholder="INV-001"
-                className="flex-1 px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-150"
-              />
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-medium text-slate-600 uppercase tracking-wide">Invoice Number</label>
               <button
                 type="button"
                 onClick={() => updateInvoiceMeta({ invoiceNumber: generateInvoiceNumber() })}
-                className="p-2 rounded-lg border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-150"
+                className="flex items-center gap-1 text-xs text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 px-1.5 py-0.5 rounded transition-all duration-150"
                 title="Generate random invoice number"
               >
-                <Shuffle size={15} />
+                <Shuffle size={11} />
+                <span>Random</span>
               </button>
             </div>
+            <input
+              value={invoice.invoiceNumber}
+              onChange={(e) => updateInvoiceMeta({ invoiceNumber: e.target.value })}
+              placeholder="INV-001"
+              className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-150"
+            />
           </div>
           <Select
             label="Currency"
