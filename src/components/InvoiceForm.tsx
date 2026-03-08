@@ -1,8 +1,15 @@
 'use client';
 import { useInvoiceStore } from '@/store/invoiceStore';
 import { Input, Textarea, Select, SectionCard } from '@/components/ui/FormControls';
-import { Building2, User, FileText, UploadCloud, X } from 'lucide-react';
+import { Building2, User, FileText, UploadCloud, X, Shuffle } from 'lucide-react';
 import { useRef } from 'react';
+
+function generateInvoiceNumber(): string {
+  const prefix = 'INV';
+  const year = new Date().getFullYear();
+  const random = Math.floor(1000 + Math.random() * 9000);
+  return `${prefix}-${year}-${random}`;
+}
 
 const CURRENCIES = [
   { value: 'INR', label: '₹ INR - Indian Rupee' },
@@ -38,12 +45,25 @@ export function InvoiceForm() {
       {/* Invoice Meta */}
       <SectionCard title="Invoice Details" icon={<FileText size={16} className="text-indigo-500" />}>
         <div className="grid grid-cols-2 gap-3 mt-3">
-          <Input
-            label="Invoice Number"
-            value={invoice.invoiceNumber}
-            onChange={(e) => updateInvoiceMeta({ invoiceNumber: e.target.value })}
-            placeholder="INV-001"
-          />
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-medium text-slate-600 uppercase tracking-wide">Invoice Number</label>
+            <div className="flex items-center gap-2">
+              <input
+                value={invoice.invoiceNumber}
+                onChange={(e) => updateInvoiceMeta({ invoiceNumber: e.target.value })}
+                placeholder="INV-001"
+                className="flex-1 px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-150"
+              />
+              <button
+                type="button"
+                onClick={() => updateInvoiceMeta({ invoiceNumber: generateInvoiceNumber() })}
+                className="p-2 rounded-lg border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-150"
+                title="Generate random invoice number"
+              >
+                <Shuffle size={15} />
+              </button>
+            </div>
+          </div>
           <Select
             label="Currency"
             value={invoice.currency}
