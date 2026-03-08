@@ -62,13 +62,12 @@ export function ItemTable() {
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
-              <th className="w-8 px-2 py-3"></th>
-              <th className="px-3 py-3 text-left font-semibold">#</th>
-              <th className="px-3 py-3 text-left font-semibold min-w-[200px]">{cols.description}</th>
-              <th className="px-3 py-3 text-right font-semibold w-24">{cols.quantity}</th>
-              <th className="px-3 py-3 text-right font-semibold w-32">{cols.rate}</th>
-              <th className="px-3 py-3 text-right font-semibold w-32">{cols.amount}</th>
-              <th className="px-3 py-3 w-10"></th>
+              <th className="w-6 px-1 py-3"></th>
+              <th className="px-2 py-3 text-left font-semibold">{cols.description}</th>
+              <th className="px-2 py-3 text-right font-semibold w-16">{cols.quantity}</th>
+              <th className="px-2 py-3 text-right font-semibold w-24">{cols.rate}</th>
+              <th className="px-2 py-3 text-right font-semibold w-24">{cols.amount}</th>
+              <th className="px-1 py-3 w-8"></th>
             </tr>
           </thead>
           <tbody>
@@ -87,10 +86,10 @@ export function ItemTable() {
                 onDrop={() => handleDrop(idx)}
                 onDragEnd={() => { setDragIdx(null); setOverIdx(null); }}
               />
-            ))}
+            ))}            
             {items.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-5 py-8 text-center text-slate-400 text-sm">
+                <td colSpan={6} className="px-5 py-8 text-center text-slate-400 text-sm">
                   No items added yet. Click &quot;Add Item&quot; to get started.
                 </td>
               </tr>
@@ -138,11 +137,10 @@ function ItemRow({ item, idx, currency, isDragging, isOver, onUpdate, onRemove, 
       onDragEnd={onDragEnd}
       className={`border-b border-slate-100 transition-all ${isDragging ? 'opacity-40' : ''} ${isOver ? 'bg-indigo-50' : 'hover:bg-slate-50'}`}
     >
-      <td className="px-2 py-2 cursor-grab text-slate-300 hover:text-slate-500">
-        <GripVertical size={14} />
+      <td className="px-1 py-2 cursor-grab text-slate-300 hover:text-slate-500">
+        <GripVertical size={13} />
       </td>
-      <td className="px-3 py-2 text-slate-400 text-xs">{idx + 1}</td>
-      <td className="px-3 py-2">
+      <td className="px-2 py-2">
         <input
           type="text"
           value={item.description}
@@ -151,28 +149,28 @@ function ItemRow({ item, idx, currency, isDragging, isOver, onUpdate, onRemove, 
           className="w-full text-sm bg-transparent border border-transparent focus:border-slate-200 focus:bg-white px-2 py-1 rounded-md outline-none transition-all"
         />
       </td>
-      <td className="px-3 py-2">
+      <td className="px-2 py-2">
         <input
           type="number"
           min={0}
           value={item.quantity}
           onChange={(e) => onUpdate({ quantity: parseFloat(e.target.value) || 0 })}
-          className="w-full text-sm text-right bg-transparent border border-transparent focus:border-slate-200 focus:bg-white px-2 py-1 rounded-md outline-none transition-all"
+          className="w-full text-sm text-right bg-transparent border border-transparent focus:border-slate-200 focus:bg-white px-1 py-1 rounded-md outline-none transition-all"
         />
       </td>
-      <td className="px-3 py-2">
+      <td className="px-2 py-2">
         <input
           type="number"
           min={0}
           value={item.rate}
           onChange={(e) => onUpdate({ rate: parseFloat(e.target.value) || 0 })}
-          className="w-full text-sm text-right bg-transparent border border-transparent focus:border-slate-200 focus:bg-white px-2 py-1 rounded-md outline-none transition-all"
+          className="w-full text-sm text-right bg-transparent border border-transparent focus:border-slate-200 focus:bg-white px-1 py-1 rounded-md outline-none transition-all"
         />
       </td>
-      <td className="px-3 py-2 text-right font-medium text-slate-700 text-sm">
+      <td className="px-2 py-2 text-right font-medium text-slate-700 text-sm whitespace-nowrap">
         {formatCurrency(item.subtotal, currency)}
       </td>
-      <td className="px-3 py-2">
+      <td className="px-1 py-2">
         <button
           type="button"
           onClick={onRemove}

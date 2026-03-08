@@ -49,7 +49,8 @@ export function AmountInWords({ invoice, tax }: TemplateProps) {
   if (invoice.currency !== 'INR') return null;
   return (
     <p className="text-xs text-gray-500 mt-2 italic">
-      Amount in Words: <span className="font-medium text-gray-700">{numberToWords(tax.grandTotal)}</span>
+      {'Amount in Words: '}
+      <span className="font-medium text-gray-700">{numberToWords(tax.grandTotal)}</span>
     </p>
   );
 }

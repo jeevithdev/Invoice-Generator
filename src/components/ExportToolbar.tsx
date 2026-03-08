@@ -198,6 +198,12 @@ async function fixClonedDoc(clonedDoc: Document): Promise<void> {
       }
     }),
   );
+
+  // Fix html2canvas letter-spacing bug: letter-spacing is applied to space
+  // characters too, causing them to collapse. Reset it globally in the clone.
+  const fix = clonedDoc.createElement('style');
+  fix.textContent = '* { letter-spacing: 0 !important; word-spacing: normal !important; }';
+  clonedDoc.head.appendChild(fix);
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -205,24 +211,50 @@ async function fixClonedDoc(clonedDoc: Document): Promise<void> {
 export function ExportToolbar() {
   const { invoice, loadSavedInvoice, resetInvoice } = useInvoiceStore();
 
-  const handleDownloadPDF = useCallback(async () => {
+  const handleDownloadPDF = useCallback(() => {
     const el = document.getElementById('invoice-preview-root');
     if (!el) return;
 
-    const html2pdf = (await import('html2pdf.js')).default;
-    const opt = {
-      margin: 0,
-      filename: `Invoice-${invoice.invoiceNumber}.pdf`,
-      image: { type: 'jpeg' as const, quality: 0.98 },
-      html2canvas: {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        onclone: (clonedDoc: Document) => fixClonedDoc(clonedDoc),
-      },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const },
-    };
-    html2pdf().set(opt).from(el).save();
+    // Collect all stylesheet links from the current page
+    const styleLinks = Array.from(
+      document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]'),
+    )
+      .map((l) => `<link rel="stylesheet" href="${l.href}">`)
+      .join('\n');
+
+    // Use an iframe + browser print engine — no html2canvas, perfect text rendering
+    const iframe = document.createElement('iframe');
+    iframe.style.cssText =
+      'position:fixed;left:-9999px;top:-9999px;width:794px;height:1123px;border:0;visibility:hidden;';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentDocument!;
+    doc.open();
+    doc.write(`<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Invoice-${invoice.invoiceNumber}</title>
+  ${styleLinks}
+  <style>
+    @page { size: A4 portrait; margin: 0; }
+    html, body { margin: 0; padding: 0; background: #fff; }
+    @media print {
+      html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>${el.outerHTML}</body>
+</html>`);
+    doc.close();
+
+    // Wait for stylesheets + images to load, then trigger print
+    iframe.addEventListener('load', () => {
+      setTimeout(() => {
+        iframe.contentWindow!.print();
+        setTimeout(() => document.body.removeChild(iframe), 1500);
+      }, 400);
+    });
   }, [invoice.invoiceNumber]);
 
   const handlePrint = useCallback(() => {

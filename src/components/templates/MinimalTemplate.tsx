@@ -18,7 +18,7 @@ export function MinimalTemplate({ invoice, tax }: TemplateProps) {
           )}
           <h1 className="text-2xl font-bold text-gray-900">{invoice.company.name}</h1>
           <p className="text-sm text-gray-500 mt-1">{invoice.company.address}</p>
-          <p className="text-sm text-gray-500">{[invoice.company.city, invoice.company.state].filter(Boolean).join(', ')}{invoice.company.zip ? ` ${invoice.company.zip}` : ''}</p>
+          <p className="text-sm text-gray-500">{[invoice.company.city, invoice.company.state, invoice.company.zip].filter(Boolean).join(', ')}</p>
           <p className="text-sm text-gray-500">{[invoice.company.phone, invoice.company.email].filter(Boolean).join(' · ')}</p>
           {invoice.company.gstin && <p className="text-xs text-gray-400 mt-1">GSTIN: {invoice.company.gstin}</p>}
         </div>
@@ -41,7 +41,7 @@ export function MinimalTemplate({ invoice, tax }: TemplateProps) {
         <h3 className="text-lg font-semibold text-gray-900">{invoice.client.name}</h3>
         <p className="text-sm text-gray-600">{invoice.client.company}</p>
         <p className="text-sm text-gray-500">{invoice.client.address}</p>
-        <p className="text-sm text-gray-500">{[invoice.client.city, invoice.client.state].filter(Boolean).join(', ')}{invoice.client.zip ? ` ${invoice.client.zip}` : ''}</p>
+        <p className="text-sm text-gray-500">{[invoice.client.city, invoice.client.state, invoice.client.zip].filter(Boolean).join(', ')}</p>
         <p className="text-sm text-gray-500">{[invoice.client.email, invoice.client.phone].filter(Boolean).join(' · ')}</p>
         {invoice.client.gstin && <p className="text-xs text-gray-400 mt-1">GSTIN: {invoice.client.gstin}</p>}
       </div>
