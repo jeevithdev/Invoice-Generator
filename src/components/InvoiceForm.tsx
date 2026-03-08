@@ -5,10 +5,9 @@ import { Building2, User, FileText, UploadCloud, X, Shuffle } from 'lucide-react
 import { useRef } from 'react';
 
 function generateInvoiceNumber(): string {
-  const prefix = 'INV';
-  const year = new Date().getFullYear();
-  const random = Math.floor(1000 + Math.random() * 9000);
-  return `${prefix}-${year}-${random}`;
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const part = (len: number) => Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+  return `INV-${part(3)}-${part(5)}`;
 }
 
 const CURRENCIES = [
