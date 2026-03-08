@@ -56,12 +56,30 @@ export function InvoiceForm() {
             value={invoice.invoiceDate}
             onChange={(e) => updateInvoiceMeta({ invoiceDate: e.target.value })}
           />
-          <Input
-            label="Due Date"
-            type="date"
-            value={invoice.dueDate}
-            onChange={(e) => updateInvoiceMeta({ dueDate: e.target.value })}
-          />
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-medium text-slate-600 uppercase tracking-wide">Due Date</label>
+            <div className="flex items-center gap-2">
+              <input
+                type="date"
+                value={invoice.dueDate}
+                onChange={(e) => updateInvoiceMeta({ dueDate: e.target.value })}
+                className="flex-1 px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-150"
+              />
+              {invoice.dueDate && (
+                <button
+                  type="button"
+                  onClick={() => updateInvoiceMeta({ dueDate: '' })}
+                  className="text-xs text-slate-400 hover:text-red-500 transition-colors px-2 py-2 rounded-lg hover:bg-red-50 border border-transparent hover:border-red-200"
+                  title="Remove due date"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+            {!invoice.dueDate && (
+              <p className="text-xs text-slate-400 italic">No due date set — will be hidden on invoice</p>
+            )}
+          </div>
         </div>
       </SectionCard>
 

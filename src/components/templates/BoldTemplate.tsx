@@ -18,7 +18,7 @@ export function BoldTemplate({ invoice, tax }: TemplateProps) {
           ) : (
             <h1 className="text-3xl font-black text-white">{invoice.company.name}</h1>
           )}
-          <p className="text-white/70 text-sm">{invoice.company.address} · {invoice.company.city}</p>
+          <p className="text-white/70 text-sm">{[invoice.company.address, invoice.company.city].filter(Boolean).join(' · ')}</p>
           <p className="text-white/70 text-sm">{invoice.company.email}</p>
         </div>
         <div
@@ -28,7 +28,7 @@ export function BoldTemplate({ invoice, tax }: TemplateProps) {
           <p className="text-6xl font-black text-white/20 leading-none">INV</p>
           <p className="text-white font-black text-2xl mt-1">#{invoice.invoiceNumber}</p>
           <p className="text-white/70 text-sm mt-2">Date: {invoice.invoiceDate}</p>
-          <p className="text-white/70 text-sm">Due: {invoice.dueDate}</p>
+          {invoice.dueDate && <p className="text-white/70 text-sm">Due: {invoice.dueDate}</p>}
         </div>
       </div>
 
@@ -39,7 +39,7 @@ export function BoldTemplate({ invoice, tax }: TemplateProps) {
             <p className="text-xs font-black uppercase tracking-widest mb-2 text-gray-400">Billed To</p>
             <p className="font-black text-xl text-gray-900">{invoice.client.name}</p>
             <p className="text-gray-600 text-sm">{invoice.client.company}</p>
-            <p className="text-gray-500 text-sm">{invoice.client.address}, {invoice.client.city}</p>
+            <p className="text-gray-500 text-sm">{[invoice.client.address, invoice.client.city].filter(Boolean).join(', ')}</p>
             <p className="text-gray-500 text-sm">{invoice.client.email}</p>
             {invoice.client.gstin && <p className="text-gray-400 text-xs mt-1">GSTIN: {invoice.client.gstin}</p>}
           </div>

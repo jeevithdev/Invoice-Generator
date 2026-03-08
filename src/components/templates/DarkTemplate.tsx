@@ -25,7 +25,7 @@ export function DarkTemplate({ invoice, tax }: TemplateProps) {
           )}
           <h1 className="text-xl font-bold text-white">{invoice.company.name}</h1>
           <p className="text-sm mt-0.5" style={{ color: '#94a3b8' }}>{invoice.company.address}</p>
-          <p className="text-sm" style={{ color: '#94a3b8' }}>{invoice.company.city}, {invoice.company.state}</p>
+          <p className="text-sm" style={{ color: '#94a3b8' }}>{[invoice.company.city, invoice.company.state].filter(Boolean).join(', ')}</p>
           <p className="text-sm" style={{ color: '#94a3b8' }}>{invoice.company.email}</p>
           {invoice.company.gstin && <p className="text-xs mt-1" style={{ color: '#64748b' }}>GSTIN: {invoice.company.gstin}</p>}
         </div>
@@ -33,7 +33,7 @@ export function DarkTemplate({ invoice, tax }: TemplateProps) {
           <h2 className="text-5xl font-black tracking-widest" style={{ color: accent }}>INV</h2>
           <p className="text-white font-bold text-lg mt-1">#{invoice.invoiceNumber}</p>
           <p className="text-sm mt-2" style={{ color: '#94a3b8' }}>{invoice.invoiceDate}</p>
-          <p className="text-sm" style={{ color: '#94a3b8' }}>Due {invoice.dueDate}</p>
+          {invoice.dueDate && <p className="text-sm" style={{ color: '#94a3b8' }}>Due {invoice.dueDate}</p>}
         </div>
       </div>
 
@@ -95,7 +95,7 @@ export function DarkTemplate({ invoice, tax }: TemplateProps) {
 
       {/* Footer */}
       <div className="mt-10 pt-4 text-center text-xs" style={{ borderTop: '1px solid #2d2d4e', color: '#475569' }}>
-        {invoice.company.website} · Thank you for your business
+        {invoice.company.website ? invoice.company.website + ' · ' : ''}Thank you for your business
       </div>
     </div>
   );

@@ -27,7 +27,7 @@ export function ElegantTemplate({ invoice, tax }: TemplateProps) {
             {invoice.company.name}
           </h1>
           <p className="text-sm text-gray-500 mt-1 italic">{invoice.company.address}</p>
-          <p className="text-sm text-gray-500 italic">{invoice.company.city}, {invoice.company.state}</p>
+          <p className="text-sm text-gray-500 italic">{[invoice.company.city, invoice.company.state].filter(Boolean).join(', ')}</p>
           <p className="text-sm text-gray-500 italic">{invoice.company.email}</p>
           {invoice.company.gstin && <p className="text-xs text-gray-400 mt-1">GSTIN: {invoice.company.gstin}</p>}
         </div>
@@ -38,7 +38,7 @@ export function ElegantTemplate({ invoice, tax }: TemplateProps) {
           <div className="mt-2 space-y-1">
             <p className="text-sm text-gray-600">No: <strong className="text-gray-900">#{invoice.invoiceNumber}</strong></p>
             <p className="text-sm text-gray-600">Dated: <strong>{invoice.invoiceDate}</strong></p>
-            <p className="text-sm text-gray-600">Due by: <strong>{invoice.dueDate}</strong></p>
+            {invoice.dueDate && <p className="text-sm text-gray-600">Due by: <strong>{invoice.dueDate}</strong></p>}
           </div>
         </div>
       </div>
@@ -56,7 +56,7 @@ export function ElegantTemplate({ invoice, tax }: TemplateProps) {
         <p className="text-lg font-bold text-gray-900">{invoice.client.name}</p>
         <p className="text-gray-600 italic">{invoice.client.company}</p>
         <p className="text-sm text-gray-500">{invoice.client.address}</p>
-        <p className="text-sm text-gray-500">{invoice.client.city}, {invoice.client.state} {invoice.client.zip}</p>
+        <p className="text-sm text-gray-500">{[invoice.client.city, invoice.client.state].filter(Boolean).join(', ')}{invoice.client.zip ? ` ${invoice.client.zip}` : ''}</p>
         <p className="text-sm text-gray-500">{invoice.client.email}</p>
         {invoice.client.gstin && <p className="text-xs text-gray-400 mt-1">GSTIN: {invoice.client.gstin}</p>}
       </div>

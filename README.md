@@ -1,8 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# InvoiceCraft — Professional Invoice Generator
+
+A fully-featured invoice generator built with **Next.js 16**, **TailwindCSS v4**, and **Zustand**.
+
+## Features
+
+- 6 professional invoice templates (Minimal, Corporate, Grid, Bold, Elegant, Dark)
+- GST / IGST tax calculations with discount support
+- One-click PDF export and browser print
+- Logo upload, accent color picker, column customization
+- Save / Load invoices as JSON
+- Indian number-to-words amount conversion
+- Fully client-side — no backend required
+
+## Tech Stack
+
+- **Next.js 16** (App Router, Turbopack)
+- **TailwindCSS v4**
+- **Zustand v5** (persisted state)
+- **html2pdf.js** (PDF export)
+- **lucide-react** (icons)
 
 ## Getting Started
 
-First, run the development server:
+```bash
+npm install
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000).
+
+## Production Build
+
+```bash
+npm run build
+npm run start
+```
+
+## Deploy
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
+
+The app is fully static-compatible and can be deployed to Vercel, Netlify, or any Node.js host.
+
 
 ```bash
 npm run dev

@@ -19,8 +19,8 @@ export function GridTemplate({ invoice, tax }: TemplateProps) {
             )}
             <div>
               <h1 className="text-xl font-bold text-gray-900">{invoice.company.name}</h1>
-              <p className="text-sm text-gray-500 mt-0.5">{invoice.company.address}, {invoice.company.city}</p>
-              <p className="text-sm text-gray-500">{invoice.company.email} · {invoice.company.phone}</p>
+              <p className="text-sm text-gray-500 mt-0.5">{[invoice.company.address, invoice.company.city].filter(Boolean).join(', ')}</p>
+              <p className="text-sm text-gray-500">{[invoice.company.email, invoice.company.phone].filter(Boolean).join(' · ')}</p>
               {invoice.company.gstin && <p className="text-xs text-gray-400 mt-1">GSTIN: {invoice.company.gstin}</p>}
             </div>
           </div>
@@ -42,13 +42,13 @@ export function GridTemplate({ invoice, tax }: TemplateProps) {
           <p className="font-semibold text-gray-900">{invoice.client.name}</p>
           <p className="text-gray-600 text-xs">{invoice.client.company}</p>
           <p className="text-gray-500 text-xs">{invoice.client.address}</p>
-          <p className="text-gray-500 text-xs">{invoice.client.city}, {invoice.client.state}</p>
+          <p className="text-gray-500 text-xs">{[invoice.client.city, invoice.client.state].filter(Boolean).join(', ')}</p>
           <p className="text-gray-500 text-xs">{invoice.client.email}</p>
           {invoice.client.gstin && <p className="text-gray-400 text-xs">GSTIN: {invoice.client.gstin}</p>}
         </InfoCard>
         <InfoCard label="Invoice Date" accent={accent}>
           <p className="text-2xl font-bold text-gray-900">{invoice.invoiceDate}</p>
-          <p className="text-xs text-gray-500 mt-1">Due: {invoice.dueDate}</p>
+          {invoice.dueDate && <p className="text-xs text-gray-500 mt-1">Due: {invoice.dueDate}</p>}
         </InfoCard>
         <InfoCard label="Amount Due" accent={accent}>
           <p className="text-2xl font-bold" style={{ color: accent }}>{formatCurrency(tax.grandTotal, invoice.currency)}</p>

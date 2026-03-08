@@ -33,10 +33,12 @@ export function CorporateTemplate({ invoice, tax }: TemplateProps) {
           <p className="font-semibold uppercase tracking-wide opacity-70">Issue Date</p>
           <p className="font-bold text-sm">{invoice.invoiceDate}</p>
         </div>
-        <div className="text-white/90 text-xs">
-          <p className="font-semibold uppercase tracking-wide opacity-70">Due Date</p>
-          <p className="font-bold text-sm">{invoice.dueDate}</p>
-        </div>
+        {invoice.dueDate && (
+          <div className="text-white/90 text-xs">
+            <p className="font-semibold uppercase tracking-wide opacity-70">Due Date</p>
+            <p className="font-bold text-sm">{invoice.dueDate}</p>
+          </div>
+        )}
         <div className="text-white/90 text-xs ml-auto">
           <p className="font-semibold uppercase tracking-wide opacity-70">Currency</p>
           <p className="font-bold text-sm">{invoice.currency}</p>
@@ -50,7 +52,7 @@ export function CorporateTemplate({ invoice, tax }: TemplateProps) {
             <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: accent }}>From</p>
             <p className="font-semibold text-gray-900 text-base">{invoice.company.name}</p>
             <p className="text-sm text-gray-500">{invoice.company.address}</p>
-            <p className="text-sm text-gray-500">{invoice.company.city}, {invoice.company.state}</p>
+            <p className="text-sm text-gray-500">{[invoice.company.city, invoice.company.state].filter(Boolean).join(', ')}</p>
             <p className="text-sm text-gray-500">{invoice.company.phone}</p>
             <p className="text-sm text-gray-500">{invoice.company.email}</p>
             {invoice.company.gstin && <p className="text-xs text-gray-400 mt-1">GSTIN: {invoice.company.gstin}</p>}
@@ -60,7 +62,7 @@ export function CorporateTemplate({ invoice, tax }: TemplateProps) {
             <p className="font-semibold text-gray-900 text-base">{invoice.client.name}</p>
             <p className="text-sm text-gray-600">{invoice.client.company}</p>
             <p className="text-sm text-gray-500">{invoice.client.address}</p>
-            <p className="text-sm text-gray-500">{invoice.client.city}, {invoice.client.state}</p>
+            <p className="text-sm text-gray-500">{[invoice.client.city, invoice.client.state].filter(Boolean).join(', ')}</p>
             <p className="text-sm text-gray-500">{invoice.client.email}</p>
             {invoice.client.gstin && <p className="text-xs text-gray-400 mt-1">GSTIN: {invoice.client.gstin}</p>}
           </div>
