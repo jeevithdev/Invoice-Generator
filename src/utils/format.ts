@@ -38,8 +38,17 @@ export function numberToWords(num: number): string {
     return helper(Math.floor(n / 10000000)) + 'Crore ' + helper(n % 10000000);
   }
 
-  const intPart = Math.floor(num);
-  const decPart = Math.round((num - intPart) * 100);
+  // Round to 2 decimal places to handle floating-point precision issues
+  const roundedNum = Math.round(num * 100) / 100;
+  let intPart = Math.floor(roundedNum);
+  let decPart = Math.round((roundedNum - intPart) * 100);
+  
+  // Handle case where decimal rounds to 100 paise (should be 1 rupee)
+  if (decPart >= 100) {
+    intPart += Math.floor(decPart / 100);
+    decPart = decPart % 100;
+  }
+  
   let result = helper(intPart).trim() + ' Rupees';
   if (decPart > 0) result += ' and ' + helper(decPart).trim() + ' Paise';
   result += ' Only';
