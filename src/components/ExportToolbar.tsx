@@ -83,8 +83,63 @@ function convertModernColor(funcName: string, inner: string): string {
     let r = 128, g = 128, bl = 128;
 
     if (fn === 'color-mix') {
-      if (inner.includes('transparent')) return 'transparent';
-      // Use a neutral mid-tone fallback
+      // color-mix(in <colorspace>, <color1> [<pct>%], <color2> [<pct>%])
+      // Tailwind v4 opacity modifiers (e.g. text-white/70) compile to:
+      //   color-mix(in oklab, white 70%, transparent)
+      // The old code returned 'transparent' whenever 'transparent' appeared,
+      // making all semi-transparent white sidebar text invisible in the PDF.
+      const withoutSpace = inner.replace(/^in\s+[\w-]+\s*,\s*/i, '');
+      // Split the two arguments while respecting nested parentheses
+      let depth2 = 0, splitAt = -1;
+      for (let i = 0; i < withoutSpace.length; i++) {
+        if (withoutSpace[i] === '(') depth2++;
+        else if (withoutSpace[i] === ')') depth2--;
+        else if (withoutSpace[i] === ',' && depth2 === 0) { splitAt = i; break; }
+      }
+      if (splitAt !== -1) {
+        const raw1 = withoutSpace.slice(0, splitAt).trim();
+        const raw2 = withoutSpace.slice(splitAt + 1).trim();
+        const parsePart = (s: string): { colorStr: string; pct: number } => {
+          const m = s.match(/^(.*?)\s+([\d.]+)%\s*$/);
+          if (m) return { colorStr: m[1].trim(), pct: parseFloat(m[2]) / 100 };
+          return { colorStr: s.trim(), pct: 0.5 };
+        };
+        const p1 = parsePart(raw1);
+        const p2 = parsePart(raw2);
+        // Resolve a color string (may contain nested modern functions) to [r, g, b, a]
+        const resolveToRgba = (colorStr: string): [number, number, number, number] | null => {
+          if (colorStr === 'transparent') return [0, 0, 0, 0];
+          if (colorStr === 'white') return [255, 255, 255, 1];
+          if (colorStr === 'black') return [0, 0, 0, 1];
+          const hex = colorStr.match(/^#([0-9a-f]{3,6})$/i);
+          if (hex) {
+            const h = hex[1].length === 3 ? hex[1].split('').map(c => c + c).join('') : hex[1];
+            return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16), 1];
+          }
+          const rgbM = colorStr.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+          if (rgbM) return [+rgbM[1], +rgbM[2], +rgbM[3], rgbM[4] ? +rgbM[4] : 1];
+          // Recursively convert any nested modern color functions (e.g. oklch inside color-mix)
+          const converted = replaceModernColorFunctions(colorStr);
+          const m2 = converted.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+          if (m2) return [+m2[1], +m2[2], +m2[3], m2[4] ? +m2[4] : 1];
+          return null;
+        };
+        const rgba1 = resolveToRgba(p1.colorStr);
+        const rgba2 = resolveToRgba(p2.colorStr);
+        if (rgba1 && rgba2) {
+          // When mixing with transparent (opacity modifier pattern like text-white/70),
+          // return the solid color at full opacity so text stays the same color in the PDF
+          // instead of being alpha-blended against the background by html2canvas.
+          if (p1.colorStr === 'transparent') return `rgb(${rgba2[0]},${rgba2[1]},${rgba2[2]})`;
+          if (p2.colorStr === 'transparent') return `rgb(${rgba1[0]},${rgba1[1]},${rgba1[2]})`;
+          const a = p1.pct * rgba1[3] + p2.pct * rgba2[3];
+          if (a <= 0) return 'transparent';
+          const mixR = clamp8((p1.pct * rgba1[3] * rgba1[0] + p2.pct * rgba2[3] * rgba2[0]) / a);
+          const mixG = clamp8((p1.pct * rgba1[3] * rgba1[1] + p2.pct * rgba2[3] * rgba2[1]) / a);
+          const mixB = clamp8((p1.pct * rgba1[3] * rgba1[2] + p2.pct * rgba2[3] * rgba2[2]) / a);
+          return a >= 1 ? `rgb(${mixR},${mixG},${mixB})` : `rgba(${mixR},${mixG},${mixB},${+a.toFixed(4)})`;
+        }
+      }
       return 'rgba(128,128,128,0.5)';
     } else if (fn === 'lab') {
       [r, g, bl] = labToSrgb(parseNum(parts[0]), parseNum(parts[1]), parseNum(parts[2]));
@@ -170,14 +225,8 @@ function replaceModernColorFunctions(text: string): string {
  * html2canvas supports async onclone (returns a Promise).
  */
 async function fixClonedDoc(clonedDoc: Document): Promise<void> {
-  // Fix inline <style> elements
-  clonedDoc.querySelectorAll('style').forEach((el) => {
-    if (el.textContent) {
-      el.textContent = replaceModernColorFunctions(el.textContent);
-    }
-  });
-
-  // Fetch, fix, and inline all same-origin <link rel="stylesheet">
+  // Step 1: Fetch and inline all same-origin <link rel="stylesheet"> WITHOUT converting
+  // colors yet — we need the full CSS so we can build the CSS variable map first.
   const links = Array.from(
     clonedDoc.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]'),
   );
@@ -191,7 +240,7 @@ async function fixClonedDoc(clonedDoc: Document): Promise<void> {
         const res = await fetch(url);
         const css = await res.text();
         const style = clonedDoc.createElement('style');
-        style.textContent = replaceModernColorFunctions(css);
+        style.textContent = css; // raw — converted in step 3
         link.parentNode?.replaceChild(style, link);
       } catch {
         link.remove();
@@ -199,8 +248,54 @@ async function fixClonedDoc(clonedDoc: Document): Promise<void> {
     }),
   );
 
-  // Fix html2canvas letter-spacing bug: letter-spacing is applied to space
-  // characters too, causing them to collapse. Reset it globally in the clone.
+  // Step 2: Build a CSS custom-property map from ALL style elements.
+  // Tailwind v4 compiles opacity utilities like `text-white/60` to:
+  //   color-mix(in oklab, var(--color-white) 60%, transparent)
+  // We need to know what --color-white (etc.) resolves to before we can convert.
+  const varMap = new Map<string, string>();
+  clonedDoc.querySelectorAll('style').forEach((el) => {
+    if (!el.textContent) return;
+    const re = /(--[\w-]+)\s*:\s*([^;}{]+)/g;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(el.textContent)) !== null) {
+      if (!varMap.has(m[1].trim())) varMap.set(m[1].trim(), m[2].trim());
+    }
+  });
+
+  // Step 3: Substitute CSS vars, then convert modern color functions in every style.
+  // Also strip all letter-spacing / word-spacing values from the CSS — html2canvas has
+  // a known bug where non-zero letter-spacing is applied to space characters too, which
+  // causes words to run together or have wrong spacing in the exported PDF.
+  const substituteVars = (css: string, depth = 0): string => {
+    if (depth > 5 || !css.includes('var(')) return css;
+    return css.replace(/var\(\s*(--[\w-]+)\s*\)/g, (_: string, name: string) => {
+      const val = varMap.get(name.trim());
+      return val ? substituteVars(val, depth + 1) : _;
+    });
+  };
+
+  const stripLetterWordSpacing = (css: string): string =>
+    css
+      .replace(/letter-spacing\s*:[^;!{}]*/gi, 'letter-spacing: 0')
+      .replace(/word-spacing\s*:[^;!{}]*/gi, 'word-spacing: normal');
+
+  clonedDoc.querySelectorAll('style').forEach((el) => {
+    if (el.textContent) {
+      el.textContent = stripLetterWordSpacing(
+        replaceModernColorFunctions(substituteVars(el.textContent)),
+      );
+    }
+  });
+
+  // Step 4a: Clear any inline letter-spacing / word-spacing set directly on elements
+  // (e.g. via React style props or framework-injected inline styles). CSS overrides alone
+  // won't beat inline styles in html2canvas's computed-style reader.
+  clonedDoc.querySelectorAll<HTMLElement>('*').forEach((el) => {
+    if (el.style.letterSpacing) el.style.letterSpacing = '0';
+    if (el.style.wordSpacing) el.style.wordSpacing = 'normal';
+  });
+
+  // Step 4b: Belt-and-suspenders CSS override for anything computed via cascade.
   const fix = clonedDoc.createElement('style');
   fix.textContent = '* { letter-spacing: 0 !important; word-spacing: normal !important; }';
   clonedDoc.head.appendChild(fix);
@@ -226,7 +321,7 @@ export function ExportToolbar() {
       margin: 0,
       filename: `Invoice-${invoice.invoiceNumber}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, onclone: fixClonedDoc },
+      html2canvas: { scale: 2, useCORS: true, onclone: fixClonedDoc, scrollX: 0, scrollY: 0, windowWidth: 794 },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const },
     };
 

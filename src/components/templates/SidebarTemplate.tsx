@@ -9,11 +9,11 @@ export function SidebarTemplate({ invoice, tax }: TemplateProps) {
   const cols = invoice.customization.columnNames;
 
   return (
-    <div className="bg-white w-full min-h-[1000px] flex" style={{ fontFamily: 'Inter, sans-serif' }}>
+    <div className="bg-white w-full flex" style={{ fontFamily: 'Inter, sans-serif', minHeight: 1122, height: '100%' }}>
       {/* Left accent sidebar */}
       <div
         className="w-56 flex-shrink-0 flex flex-col px-6 py-10"
-        style={{ backgroundColor: accent, minHeight: '100%' }}
+        style={{ backgroundColor: accent, alignSelf: 'stretch' }}
       >
         {/* Logo / Company name */}
         <div className="mb-8">
