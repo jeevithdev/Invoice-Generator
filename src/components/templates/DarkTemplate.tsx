@@ -25,7 +25,7 @@ export function DarkTemplate({ invoice, tax }: TemplateProps) {
           )}
           <h1 className="text-xl font-bold text-white">{invoice.company.name}</h1>
           <p className="text-sm mt-0.5" style={{ color: '#94a3b8' }}>{invoice.company.address}</p>
-          <p className="text-sm" style={{ color: '#94a3b8' }}>{[invoice.company.city, invoice.company.state].filter(Boolean).join(', ')}</p>
+          <p className="text-sm" style={{ color: '#94a3b8' }}>{[invoice.company.city, invoice.company.state, invoice.company.zip, invoice.company.country].filter(Boolean).join(', ')}</p>
           <p className="text-sm" style={{ color: '#94a3b8' }}>{invoice.company.email}</p>
           {invoice.company.gstin && <p className="text-xs mt-1" style={{ color: '#64748b' }}>GSTIN: {invoice.company.gstin}</p>}
         </div>
@@ -53,6 +53,7 @@ export function DarkTemplate({ invoice, tax }: TemplateProps) {
           <p className="font-semibold text-white">{invoice.client.name}</p>
           <p className="text-sm" style={{ color: '#94a3b8' }}>{invoice.client.company}</p>
           <p className="text-sm" style={{ color: '#94a3b8' }}>{invoice.client.address}</p>
+          <p className="text-sm" style={{ color: '#94a3b8' }}>{[invoice.client.city, invoice.client.state, invoice.client.zip, invoice.client.country].filter(Boolean).join(', ')}</p>
           <p className="text-sm" style={{ color: '#94a3b8' }}>{invoice.client.email}</p>
         </div>
       </div>

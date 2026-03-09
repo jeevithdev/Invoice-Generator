@@ -11,7 +11,7 @@ export function WaveTemplate({ invoice, tax }: TemplateProps) {
         <div className="p-8">
           <div className="flex justify-between mb-8">
             <div>
-              <p className="text-xs uppercase tracking-[0.3em] text-blue-600">Flow Invoice</p>
+              <p className="text-xs uppercase tracking-[0.3em] text-blue-600">Invoice</p>
               <h1 className="text-3xl font-black mt-1">{invoice.company.name}</h1>
             </div>
             <div className="text-right text-sm text-slate-600">
@@ -25,12 +25,16 @@ export function WaveTemplate({ invoice, tax }: TemplateProps) {
             <div className="rounded-xl border border-blue-200 p-4">
               <p className="uppercase text-xs tracking-widest text-blue-600 mb-1">From</p>
               <p className="font-semibold">{invoice.company.name}</p>
+              <p>{invoice.company.address}</p>
+              <p>{[invoice.company.city, invoice.company.state, invoice.company.zip, invoice.company.country].filter(Boolean).join(', ')}</p>
               <p>{invoice.company.email}</p>
             </div>
             <div className="rounded-xl border border-blue-200 p-4">
               <p className="uppercase text-xs tracking-widest text-blue-600 mb-1">To</p>
               <p className="font-semibold">{invoice.client.name}</p>
               <p>{invoice.client.company}</p>
+              <p>{invoice.client.address}</p>
+              <p>{[invoice.client.city, invoice.client.state, invoice.client.zip, invoice.client.country].filter(Boolean).join(', ')}</p>
             </div>
           </div>
 

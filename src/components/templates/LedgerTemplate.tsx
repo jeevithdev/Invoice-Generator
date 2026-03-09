@@ -9,7 +9,7 @@ export function LedgerTemplate({ invoice, tax }: TemplateProps) {
       <div className="max-w-5xl mx-auto bg-white border-2 border-emerald-700 p-8">
         <div className="flex justify-between mb-8 pb-4 border-b-2 border-emerald-700">
           <div>
-            <p className="uppercase text-xs tracking-[0.3em] text-emerald-700">Ledger</p>
+            <p className="uppercase text-xs tracking-[0.3em] text-emerald-700">Invoice</p>
             <h1 className="text-3xl font-bold mt-1">{invoice.company.name}</h1>
           </div>
           <div className="text-right text-sm">
@@ -24,6 +24,7 @@ export function LedgerTemplate({ invoice, tax }: TemplateProps) {
             <p className="font-bold uppercase text-xs text-emerald-700 mb-1">Issued By</p>
             <p>{invoice.company.name}</p>
             <p>{invoice.company.address}</p>
+            <p>{[invoice.company.city, invoice.company.state, invoice.company.zip, invoice.company.country].filter(Boolean).join(', ')}</p>
             <p>{invoice.company.email}</p>
           </div>
           <div>
@@ -31,6 +32,7 @@ export function LedgerTemplate({ invoice, tax }: TemplateProps) {
             <p>{invoice.client.name}</p>
             <p>{invoice.client.company}</p>
             <p>{invoice.client.address}</p>
+            <p>{[invoice.client.city, invoice.client.state, invoice.client.zip, invoice.client.country].filter(Boolean).join(', ')}</p>
           </div>
         </div>
 

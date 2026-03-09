@@ -17,6 +17,7 @@ export function ExecutiveTemplate({ invoice, tax }: TemplateProps) {
           )}
           <h1 className="text-2xl font-bold text-slate-900">{invoice.company.name}</h1>
           <p className="text-sm text-slate-500">{invoice.company.address}</p>
+          <p className="text-sm text-slate-500">{[invoice.company.city, invoice.company.state, invoice.company.zip, invoice.company.country].filter(Boolean).join(', ')}</p>
         </div>
         <div className="text-right">
           <p className="text-xs uppercase tracking-[0.25em] text-slate-400">Invoice</p>
@@ -34,6 +35,7 @@ export function ExecutiveTemplate({ invoice, tax }: TemplateProps) {
           <p className="font-semibold text-slate-900">{invoice.client.name}</p>
           <p className="text-sm text-slate-600">{invoice.client.company}</p>
           <p className="text-sm text-slate-600">{invoice.client.address}</p>
+          <p className="text-sm text-slate-600">{[invoice.client.city, invoice.client.state, invoice.client.zip, invoice.client.country].filter(Boolean).join(', ')}</p>
         </div>
         <div className="rounded-xl border border-slate-200 p-4">
           <p className="text-xs uppercase tracking-widest text-slate-500 mb-2">Amount Due</p>

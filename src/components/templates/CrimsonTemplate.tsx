@@ -30,12 +30,15 @@ export function CrimsonTemplate({ invoice, tax }: TemplateProps) {
               <p className="text-xs uppercase tracking-widest mb-1" style={{ color: accent }}>From</p>
               <p className="font-semibold">{invoice.company.name}</p>
               <p className="text-sm text-slate-600">{invoice.company.address}</p>
+              <p className="text-sm text-slate-600">{[invoice.company.city, invoice.company.state, invoice.company.zip, invoice.company.country].filter(Boolean).join(', ')}</p>
               <p className="text-sm text-slate-600">{invoice.company.email}</p>
             </div>
             <div>
               <p className="text-xs uppercase tracking-widest mb-1" style={{ color: accent }}>To</p>
               <p className="font-semibold">{invoice.client.name}</p>
               <p className="text-sm text-slate-600">{invoice.client.company}</p>
+              <p className="text-sm text-slate-600">{invoice.client.address}</p>
+              <p className="text-sm text-slate-600">{[invoice.client.city, invoice.client.state, invoice.client.zip, invoice.client.country].filter(Boolean).join(', ')}</p>
               <p className="text-sm text-slate-600">{invoice.client.email}</p>
             </div>
           </div>

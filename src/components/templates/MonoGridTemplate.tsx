@@ -12,7 +12,7 @@ export function MonoGridTemplate({ invoice, tax }: TemplateProps) {
       <div className="border-2 border-black p-8">
         <div className="flex justify-between items-start mb-8">
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-gray-500">Mono Grid</p>
+            <p className="text-xs uppercase tracking-[0.3em] text-gray-500">Invoice</p>
             <h1 className="text-2xl font-bold">{invoice.company.name}</h1>
             <p className="text-sm text-gray-600">{invoice.company.email}</p>
           </div>
@@ -28,11 +28,14 @@ export function MonoGridTemplate({ invoice, tax }: TemplateProps) {
             <p className="uppercase text-xs mb-1 text-gray-500">From</p>
             <p>{invoice.company.name}</p>
             <p>{invoice.company.address}</p>
+            <p>{[invoice.company.city, invoice.company.state, invoice.company.zip, invoice.company.country].filter(Boolean).join(', ')}</p>
           </div>
           <div className="border border-black p-3">
             <p className="uppercase text-xs mb-1 text-gray-500">To</p>
             <p>{invoice.client.name}</p>
             <p>{invoice.client.company}</p>
+            <p>{invoice.client.address}</p>
+            <p>{[invoice.client.city, invoice.client.state, invoice.client.zip, invoice.client.country].filter(Boolean).join(', ')}</p>
           </div>
         </div>
 

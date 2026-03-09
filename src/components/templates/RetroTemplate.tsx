@@ -41,7 +41,7 @@ export function RetroTemplate({ invoice, tax }: TemplateProps) {
                     {invoice.company.name}
                   </h1>
                   <p className="text-xs text-gray-600 mt-1 leading-relaxed">
-                    {[invoice.company.address, invoice.company.city, invoice.company.state].filter(Boolean).join(' · ')}
+                    {[invoice.company.address, invoice.company.city, invoice.company.state, invoice.company.zip, invoice.company.country].filter(Boolean).join(' · ')}
                   </p>
                   <p className="text-xs text-gray-600">
                     {[invoice.company.phone, invoice.company.email].filter(Boolean).join(' · ')}
@@ -88,7 +88,7 @@ export function RetroTemplate({ invoice, tax }: TemplateProps) {
                 <p className="font-bold text-gray-900 text-base">{invoice.client.name}</p>
                 <p className="text-sm text-gray-700">{invoice.client.company}</p>
                 <p className="text-xs text-gray-600 mt-1 leading-relaxed">
-                  {[invoice.client.address, invoice.client.city, invoice.client.state].filter(Boolean).join(', ')}
+                  {[invoice.client.address, invoice.client.city, invoice.client.state, invoice.client.zip, invoice.client.country].filter(Boolean).join(', ')}
                 </p>
                 <p className="text-xs text-gray-600">
                   {[invoice.client.email, invoice.client.phone].filter(Boolean).join(' · ')}

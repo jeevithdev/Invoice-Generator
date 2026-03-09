@@ -38,7 +38,7 @@ export function PastelTemplate({ invoice, tax }: TemplateProps) {
                 </div>
               )}
               <p className="text-sm text-gray-500 mt-1">
-                {[invoice.company.address, invoice.company.city].filter(Boolean).join(', ')}
+                {[invoice.company.address, invoice.company.city, invoice.company.state, invoice.company.zip, invoice.company.country].filter(Boolean).join(', ')}
               </p>
               <p className="text-sm text-gray-500">
                 {[invoice.company.phone, invoice.company.email].filter(Boolean).join(' · ')}
@@ -90,7 +90,7 @@ export function PastelTemplate({ invoice, tax }: TemplateProps) {
               </p>
               <p className="font-bold text-gray-900">{invoice.company.name}</p>
               <p className="text-sm text-gray-600 mt-1 leading-relaxed">
-                {[invoice.company.address, invoice.company.city, invoice.company.state].filter(Boolean).join(', ')}
+                {[invoice.company.address, invoice.company.city, invoice.company.state, invoice.company.zip, invoice.company.country].filter(Boolean).join(', ')}
               </p>
               <p className="text-sm text-gray-500">{invoice.company.email}</p>
               {invoice.company.gstin && (
@@ -108,7 +108,7 @@ export function PastelTemplate({ invoice, tax }: TemplateProps) {
               <p className="font-bold text-gray-900">{invoice.client.name}</p>
               <p className="text-sm text-gray-700">{invoice.client.company}</p>
               <p className="text-sm text-gray-600 mt-1 leading-relaxed">
-                {[invoice.client.address, invoice.client.city, invoice.client.state].filter(Boolean).join(', ')}
+                {[invoice.client.address, invoice.client.city, invoice.client.state, invoice.client.zip, invoice.client.country].filter(Boolean).join(', ')}
               </p>
               <p className="text-sm text-gray-500">{invoice.client.email}</p>
               {invoice.client.gstin && (

@@ -9,7 +9,7 @@ export function ZenTemplate({ invoice, tax }: TemplateProps) {
       <div className="max-w-5xl mx-auto bg-white border border-stone-300 p-10">
         <div className="flex justify-between items-start mb-10">
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-stone-500">Calm Invoice</p>
+            <p className="text-xs uppercase tracking-[0.3em] text-stone-500">Invoice</p>
             <h1 className="text-4xl font-light mt-2">{invoice.company.name}</h1>
           </div>
           <div className="text-right text-sm text-stone-600 space-y-1">
@@ -24,12 +24,15 @@ export function ZenTemplate({ invoice, tax }: TemplateProps) {
             <p className="text-xs uppercase tracking-widest text-stone-500 mb-2">From</p>
             <p>{invoice.company.name}</p>
             <p className="text-sm text-stone-600">{invoice.company.address}</p>
+            <p className="text-sm text-stone-600">{[invoice.company.city, invoice.company.state, invoice.company.zip, invoice.company.country].filter(Boolean).join(', ')}</p>
             <p className="text-sm text-stone-600">{invoice.company.email}</p>
           </div>
           <div>
             <p className="text-xs uppercase tracking-widest text-stone-500 mb-2">For</p>
             <p>{invoice.client.name}</p>
             <p className="text-sm text-stone-600">{invoice.client.company}</p>
+            <p className="text-sm text-stone-600">{invoice.client.address}</p>
+            <p className="text-sm text-stone-600">{[invoice.client.city, invoice.client.state, invoice.client.zip, invoice.client.country].filter(Boolean).join(', ')}</p>
             <p className="text-sm text-stone-600">{invoice.client.email}</p>
           </div>
         </div>

@@ -27,7 +27,7 @@ export function ElegantTemplate({ invoice, tax }: TemplateProps) {
             {invoice.company.name}
           </h1>
           <p className="text-sm text-gray-500 mt-1 italic">{invoice.company.address}</p>
-          <p className="text-sm text-gray-500 italic">{[invoice.company.city, invoice.company.state].filter(Boolean).join(', ')}</p>
+          <p className="text-sm text-gray-500 italic">{[invoice.company.city, invoice.company.state, invoice.company.zip, invoice.company.country].filter(Boolean).join(', ')}</p>
           <p className="text-sm text-gray-500 italic">{invoice.company.email}</p>
           {invoice.company.gstin && <p className="text-xs text-gray-400 mt-1">GSTIN: {invoice.company.gstin}</p>}
         </div>
@@ -56,7 +56,7 @@ export function ElegantTemplate({ invoice, tax }: TemplateProps) {
         <p className="text-lg font-bold text-gray-900">{invoice.client.name}</p>
         <p className="text-gray-600 italic">{invoice.client.company}</p>
         <p className="text-sm text-gray-500">{invoice.client.address}</p>
-        <p className="text-sm text-gray-500">{[invoice.client.city, invoice.client.state, invoice.client.zip].filter(Boolean).join(', ')}</p>
+        <p className="text-sm text-gray-500">{[invoice.client.city, invoice.client.state, invoice.client.zip, invoice.client.country].filter(Boolean).join(', ')}</p>
         <p className="text-sm text-gray-500">{invoice.client.email}</p>
         {invoice.client.gstin && <p className="text-xs text-gray-400 mt-1">GSTIN: {invoice.client.gstin}</p>}
       </div>

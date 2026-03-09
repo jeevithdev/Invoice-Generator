@@ -67,7 +67,7 @@ export function MonochromeTemplate({ invoice, tax }: TemplateProps) {
           <p className="text-base font-black text-black">{invoice.company.name}</p>
           <p className="text-sm text-gray-600 mt-1">{invoice.company.address}</p>
           <p className="text-sm text-gray-600">
-            {[invoice.company.city, invoice.company.state, invoice.company.zip].filter(Boolean).join(', ')}
+            {[invoice.company.city, invoice.company.state, invoice.company.zip, invoice.company.country].filter(Boolean).join(', ')}
           </p>
           <p className="text-sm text-gray-600 mt-1">{invoice.company.phone}</p>
           <p className="text-sm text-gray-600">{invoice.company.email}</p>
@@ -83,7 +83,7 @@ export function MonochromeTemplate({ invoice, tax }: TemplateProps) {
           <p className="text-sm text-gray-700 font-medium">{invoice.client.company}</p>
           <p className="text-sm text-gray-600 mt-1">{invoice.client.address}</p>
           <p className="text-sm text-gray-600">
-            {[invoice.client.city, invoice.client.state, invoice.client.zip].filter(Boolean).join(', ')}
+            {[invoice.client.city, invoice.client.state, invoice.client.zip, invoice.client.country].filter(Boolean).join(', ')}
           </p>
           <p className="text-sm text-gray-600 mt-1">{invoice.client.email}</p>
           {invoice.client.gstin && (

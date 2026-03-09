@@ -60,7 +60,7 @@ export function SidebarTemplate({ invoice, tax }: TemplateProps) {
           <p className="text-white/60 text-xs uppercase tracking-widest mb-2">From</p>
           <p className="text-white font-semibold text-sm">{invoice.company.name}</p>
           <p className="text-white/70 text-xs mt-1 leading-relaxed">
-            {[invoice.company.address, invoice.company.city, invoice.company.state].filter(Boolean).join(', ')}
+            {[invoice.company.address, invoice.company.city, invoice.company.state, invoice.company.zip, invoice.company.country].filter(Boolean).join(', ')}
           </p>
           <p className="text-white/70 text-xs mt-1">{invoice.company.phone}</p>
           <p className="text-white/70 text-xs">{invoice.company.email}</p>
@@ -75,7 +75,7 @@ export function SidebarTemplate({ invoice, tax }: TemplateProps) {
           <p className="text-white font-semibold text-sm">{invoice.client.name}</p>
           <p className="text-white/80 text-xs">{invoice.client.company}</p>
           <p className="text-white/70 text-xs mt-1 leading-relaxed">
-            {[invoice.client.address, invoice.client.city, invoice.client.state].filter(Boolean).join(', ')}
+            {[invoice.client.address, invoice.client.city, invoice.client.state, invoice.client.zip, invoice.client.country].filter(Boolean).join(', ')}
           </p>
           <p className="text-white/70 text-xs mt-1">{invoice.client.email}</p>
           {invoice.client.gstin && (

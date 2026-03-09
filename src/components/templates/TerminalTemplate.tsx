@@ -9,7 +9,7 @@ export function TerminalTemplate({ invoice, tax }: TemplateProps) {
       <div className="max-w-5xl mx-auto border border-green-500 bg-black p-8 shadow-[0_0_30px_rgba(34,197,94,0.2)]">
         <div className="flex justify-between items-start mb-8">
           <div>
-            <p className="text-xs tracking-[0.3em] uppercase text-green-500">Terminal Invoice</p>
+            <p className="text-xs tracking-[0.3em] uppercase text-green-500">Invoice</p>
             <h1 className="text-3xl font-bold mt-2">{invoice.company.name}</h1>
             <p className="text-sm text-green-400">{invoice.company.email}</p>
           </div>
@@ -25,11 +25,14 @@ export function TerminalTemplate({ invoice, tax }: TemplateProps) {
             <p className="uppercase text-xs text-green-500 mb-1">Source</p>
             <p>{invoice.company.name}</p>
             <p>{invoice.company.address}</p>
+            <p>{[invoice.company.city, invoice.company.state, invoice.company.zip, invoice.company.country].filter(Boolean).join(', ')}</p>
           </div>
           <div>
             <p className="uppercase text-xs text-green-500 mb-1">Destination</p>
             <p>{invoice.client.name}</p>
             <p>{invoice.client.company}</p>
+            <p>{invoice.client.address}</p>
+            <p>{[invoice.client.city, invoice.client.state, invoice.client.zip, invoice.client.country].filter(Boolean).join(', ')}</p>
           </div>
         </div>
 

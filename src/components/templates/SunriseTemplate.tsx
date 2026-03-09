@@ -10,7 +10,7 @@ export function SunriseTemplate({ invoice, tax }: TemplateProps) {
         <div className="p-8 text-white" style={{ background: 'linear-gradient(120deg, #f97316 0%, #fb7185 100%)' }}>
           <div className="flex justify-between items-end">
             <div>
-              <p className="text-xs uppercase tracking-[0.25em] text-white/80">Service Invoice</p>
+              <p className="text-xs uppercase tracking-[0.25em] text-white/80">Invoice</p>
               <h1 className="text-3xl font-black mt-2">{invoice.company.name}</h1>
             </div>
             <div className="text-right">
@@ -25,6 +25,8 @@ export function SunriseTemplate({ invoice, tax }: TemplateProps) {
             <div className="p-4 rounded-2xl bg-orange-50">
               <p className="text-xs uppercase tracking-widest text-orange-600 mb-1">From</p>
               <p className="font-semibold">{invoice.company.name}</p>
+              <p className="text-sm text-orange-900/75">{invoice.company.address}</p>
+              <p className="text-sm text-orange-900/75">{[invoice.company.city, invoice.company.state, invoice.company.zip, invoice.company.country].filter(Boolean).join(', ')}</p>
               <p className="text-sm text-orange-900/75">{invoice.company.email}</p>
               <p className="text-sm text-orange-900/75">{invoice.company.phone}</p>
             </div>
@@ -32,6 +34,8 @@ export function SunriseTemplate({ invoice, tax }: TemplateProps) {
               <p className="text-xs uppercase tracking-widest text-rose-600 mb-1">To</p>
               <p className="font-semibold">{invoice.client.name}</p>
               <p className="text-sm text-rose-900/75">{invoice.client.company}</p>
+              <p className="text-sm text-rose-900/75">{invoice.client.address}</p>
+              <p className="text-sm text-rose-900/75">{[invoice.client.city, invoice.client.state, invoice.client.zip, invoice.client.country].filter(Boolean).join(', ')}</p>
               <p className="text-sm text-rose-900/75">{invoice.client.email}</p>
             </div>
           </div>

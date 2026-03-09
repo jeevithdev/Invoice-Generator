@@ -9,9 +9,10 @@ export function LuxeTemplate({ invoice, tax }: TemplateProps) {
       <div className="max-w-5xl mx-auto bg-white border border-amber-300 p-10 shadow-xl">
         <div className="flex justify-between items-start mb-10">
           <div>
-            <p className="text-xs uppercase tracking-[0.35em] text-amber-700">Luxe Edition</p>
+            <p className="text-xs uppercase tracking-[0.35em] text-amber-700">Invoice</p>
             <h1 className="text-4xl font-semibold mt-2">{invoice.company.name}</h1>
             <p className="text-sm text-neutral-600 mt-2">{invoice.company.address}</p>
+            <p className="text-sm text-neutral-600">{[invoice.company.city, invoice.company.state, invoice.company.zip, invoice.company.country].filter(Boolean).join(', ')}</p>
           </div>
           <div className="text-right border border-amber-300 px-4 py-3 bg-amber-50">
             <p className="text-xs uppercase tracking-widest text-amber-700">Invoice</p>
@@ -30,6 +31,8 @@ export function LuxeTemplate({ invoice, tax }: TemplateProps) {
             <p className="text-xs uppercase tracking-widest text-amber-700 mb-1">Billed To</p>
             <p className="font-medium">{invoice.client.name}</p>
             <p className="text-sm text-neutral-600">{invoice.client.company}</p>
+            <p className="text-sm text-neutral-600">{invoice.client.address}</p>
+            <p className="text-sm text-neutral-600">{[invoice.client.city, invoice.client.state, invoice.client.zip, invoice.client.country].filter(Boolean).join(', ')}</p>
             <p className="text-sm text-neutral-600">{invoice.client.email}</p>
           </div>
         </div>

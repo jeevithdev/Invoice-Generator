@@ -10,7 +10,7 @@ export function OceanicTemplate({ invoice, tax }: TemplateProps) {
         <div className="p-8" style={{ background: 'linear-gradient(120deg, #06b6d4, #0284c7)' }}>
           <div className="flex justify-between items-end text-white">
             <div>
-              <p className="text-xs uppercase tracking-[0.25em] text-white/80">Oceanic</p>
+              <p className="text-xs uppercase tracking-[0.25em] text-white/80">Invoice</p>
               <h1 className="text-3xl font-black mt-1">{invoice.company.name}</h1>
             </div>
             <div className="text-right text-sm">
@@ -25,6 +25,8 @@ export function OceanicTemplate({ invoice, tax }: TemplateProps) {
             <div className="rounded-xl p-4 border border-cyan-200 bg-cyan-50">
               <p className="text-xs uppercase tracking-widest text-cyan-700 mb-1">Sender</p>
               <p className="font-semibold">{invoice.company.name}</p>
+              <p className="text-sm text-cyan-900/80">{invoice.company.address}</p>
+              <p className="text-sm text-cyan-900/80">{[invoice.company.city, invoice.company.state, invoice.company.zip, invoice.company.country].filter(Boolean).join(', ')}</p>
               <p className="text-sm text-cyan-900/80">{invoice.company.email}</p>
               <p className="text-sm text-cyan-900/80">{invoice.company.phone}</p>
             </div>
@@ -32,6 +34,8 @@ export function OceanicTemplate({ invoice, tax }: TemplateProps) {
               <p className="text-xs uppercase tracking-widest text-sky-700 mb-1">Recipient</p>
               <p className="font-semibold">{invoice.client.name}</p>
               <p className="text-sm text-sky-900/80">{invoice.client.company}</p>
+              <p className="text-sm text-sky-900/80">{invoice.client.address}</p>
+              <p className="text-sm text-sky-900/80">{[invoice.client.city, invoice.client.state, invoice.client.zip, invoice.client.country].filter(Boolean).join(', ')}</p>
               <p className="text-sm text-sky-900/80">{invoice.client.email}</p>
             </div>
           </div>
