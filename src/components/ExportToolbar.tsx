@@ -211,51 +211,39 @@ async function fixClonedDoc(clonedDoc: Document): Promise<void> {
 export function ExportToolbar() {
   const { invoice, loadSavedInvoice, resetInvoice } = useInvoiceStore();
 
-  const handleDownloadPDF = useCallback(() => {
+  const handleDownloadPDF = useCallback(async () => {
     const el = document.getElementById('invoice-preview-root');
     if (!el) return;
 
-    // Collect all stylesheet links from the current page
-    const styleLinks = Array.from(
-      document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]'),
-    )
-      .map((l) => `<link rel="stylesheet" href="${l.href}">`)
-      .join('\n');
+    // Dynamically import html2pdf.js (browser-only)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const html2pdf = ((await import('html2pdf.js')) as any).default ?? (await import('html2pdf.js'));
 
-    // Use an iframe + browser print engine — no html2canvas, perfect text rendering
-    const iframe = document.createElement('iframe');
-    iframe.style.cssText =
-      'position:fixed;left:-9999px;top:-9999px;width:794px;height:1123px;border:0;visibility:hidden;';
-    document.body.appendChild(iframe);
+    // Encode invoice data into the PDF Subject metadata for roundtrip loading
+    const encodedData = btoa(encodeURIComponent(JSON.stringify(invoice)));
 
-    const doc = iframe.contentDocument!;
-    doc.open();
-    doc.write(`<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Invoice-${invoice.invoiceNumber}</title>
-  ${styleLinks}
-  <style>
-    @page { size: A4 portrait; margin: 0; }
-    html, body { margin: 0; padding: 0; background: #fff; }
-    @media print {
-      html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    }
-  </style>
-</head>
-<body>${el.outerHTML}</body>
-</html>`);
-    doc.close();
+    const opts = {
+      margin: 0,
+      filename: `Invoice-${invoice.invoiceNumber}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, onclone: fixClonedDoc },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const },
+    };
 
-    // Wait for stylesheets + images to load, then trigger print
-    iframe.addEventListener('load', () => {
-      setTimeout(() => {
-        iframe.contentWindow!.print();
-        setTimeout(() => document.body.removeChild(iframe), 1500);
-      }, 400);
-    });
-  }, [invoice.invoiceNumber]);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (html2pdf() as any)
+      .set(opts)
+      .from(el)
+      .toPdf()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .get('pdf').then((pdf: any) => {
+        pdf.setProperties({
+          title: `Invoice ${invoice.invoiceNumber}`,
+          subject: `INVOICE_DATA:${encodedData}`,
+        });
+      })
+      .save();
+  }, [invoice]);
 
   const handlePrint = useCallback(() => {
     const el = document.getElementById('invoice-preview-root');
@@ -303,15 +291,46 @@ export function ExportToolbar() {
       const file = e.target.files?.[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = (ev) => {
-        try {
-          const data = JSON.parse(ev.target?.result as string);
-          loadSavedInvoice(data);
-        } catch {
-          alert('Invalid invoice file');
-        }
-      };
-      reader.readAsText(file);
+
+      if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+        // PDF: extract invoice JSON embedded in the Subject metadata field
+        reader.onload = (ev) => {
+          try {
+            const buffer = ev.target?.result as ArrayBuffer;
+            const bytes = new Uint8Array(buffer);
+            // Decode as latin1 so each byte maps 1-to-1 to a character
+            let pdfText = '';
+            for (let i = 0; i < bytes.length; i++) pdfText += String.fromCharCode(bytes[i]);
+
+            const marker = 'INVOICE_DATA:';
+            const markerIdx = pdfText.indexOf(marker);
+            if (markerIdx === -1) throw new Error('No invoice data found in PDF');
+
+            const dataStart = markerIdx + marker.length;
+            // Capture base64 chars (strip any whitespace jsPDF may insert for line-wrapping)
+            const match = pdfText.slice(dataStart).match(/^[A-Za-z0-9+/=\s]+/);
+            if (!match) throw new Error('Could not read embedded data');
+            const encodedData = match[0].replace(/\s/g, '');
+            const data = JSON.parse(decodeURIComponent(atob(encodedData)));
+            loadSavedInvoice(data);
+          } catch {
+            alert('No invoice data found in this PDF.\nOnly PDFs downloaded from this app can be loaded.');
+          }
+        };
+        reader.readAsArrayBuffer(file);
+      } else {
+        // JSON
+        reader.onload = (ev) => {
+          try {
+            const data = JSON.parse(ev.target?.result as string);
+            loadSavedInvoice(data);
+          } catch {
+            alert('Invalid invoice file');
+          }
+        };
+        reader.readAsText(file);
+      }
+
       e.target.value = '';
     },
     [loadSavedInvoice],
@@ -360,15 +379,16 @@ export function ExportToolbar() {
       <button
         type="button"
         onClick={handleReset}
-        className="flex items-center gap-2 px-3 py-2.5 bg-white border border-slate-200 text-slate-500 rounded-xl text-sm hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors shadow-sm"
-        title="Reset invoice"
+        className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-500 rounded-xl text-sm font-semibold hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors shadow-sm"
+        title="Clear all data"
       >
         <RotateCcw size={15} />
+        Clear
       </button>
       <input
         ref={fileRef}
         type="file"
-        accept=".json"
+        accept=".json,.pdf"
         className="hidden"
         onChange={handleLoad}
       />
