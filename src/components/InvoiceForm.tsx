@@ -3,6 +3,7 @@ import { useInvoiceStore } from '@/store/invoiceStore';
 import { Input, Textarea, Select, SectionCard } from '@/components/ui/FormControls';
 import { Building2, User, FileText, UploadCloud, X, Shuffle } from 'lucide-react';
 import { useRef } from 'react';
+import { generateRandomGSTIN } from '@/utils/gstin';
 
 function generateInvoiceNumber(): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -189,12 +190,26 @@ export function InvoiceForm() {
               value={invoice.company.website}
               onChange={(e) => updateCompany({ website: e.target.value })}
             />
-            <Input
-              label="GSTIN"
-              value={invoice.company.gstin}
-              onChange={(e) => updateCompany({ gstin: e.target.value })}
-              placeholder="22AAAAA0000A1Z5"
-            />
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-medium text-slate-600 uppercase tracking-wide">GSTIN</label>
+                <button
+                  type="button"
+                  onClick={() => updateCompany({ gstin: generateRandomGSTIN() })}
+                  className="flex items-center gap-1 text-xs text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 px-1.5 py-0.5 rounded transition-all duration-150"
+                  title="Generate random GSTIN"
+                >
+                  <Shuffle size={11} />
+                  <span>Random</span>
+                </button>
+              </div>
+              <input
+                value={invoice.company.gstin}
+                onChange={(e) => updateCompany({ gstin: e.target.value.toUpperCase() })}
+                placeholder="22AAAAA0000A1Z5"
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-150"
+              />
+            </div>
           </div>
         </div>
       </SectionCard>
@@ -254,12 +269,26 @@ export function InvoiceForm() {
               onChange={(e) => updateClient({ email: e.target.value })}
             />
           </div>
-          <Input
-            label="Client GSTIN"
-            value={invoice.client.gstin}
-            onChange={(e) => updateClient({ gstin: e.target.value })}
-            placeholder="22AAAAA0000A1Z5"
-          />
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-medium text-slate-600 uppercase tracking-wide">Client GSTIN</label>
+              <button
+                type="button"
+                onClick={() => updateClient({ gstin: generateRandomGSTIN() })}
+                className="flex items-center gap-1 text-xs text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 px-1.5 py-0.5 rounded transition-all duration-150"
+                title="Generate random client GSTIN"
+              >
+                <Shuffle size={11} />
+                <span>Random</span>
+              </button>
+            </div>
+            <input
+              value={invoice.client.gstin}
+              onChange={(e) => updateClient({ gstin: e.target.value.toUpperCase() })}
+              placeholder="22AAAAA0000A1Z5"
+              className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-150"
+            />
+          </div>
         </div>
       </SectionCard>
 
