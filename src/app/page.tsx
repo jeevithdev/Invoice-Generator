@@ -7,6 +7,7 @@ import { TaxCalculator } from '@/components/TaxCalculator';
 import { TemplateSelector } from '@/components/TemplateSelector';
 import { CustomizationPanel } from '@/components/CustomizationPanel';
 import { ExportToolbar } from '@/components/ExportToolbar';
+import { PdfImportButton } from '@/components/PdfImportButton';
 import { TemplateRenderer } from '@/components/templates/index';
 import { FileText, Settings, Calculator, Palette, LayoutTemplate, ZoomIn, ZoomOut } from 'lucide-react';
 
@@ -42,7 +43,10 @@ export default function InvoiceBuilder() {
               <p className="text-xs text-slate-400 leading-tight hidden sm:block">Professional Invoice Generator</p>
             </div>
           </div>
-          <ExportToolbar />
+          <div className="flex items-center gap-2">
+            <PdfImportButton />
+            <ExportToolbar />
+          </div>
         </div>
       </header>
 

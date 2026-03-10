@@ -1,4 +1,4 @@
-import { InvoiceData, InvoiceItem, TaxBreakdown, TemplateId } from '@/types/invoice';
+import { InvoiceData, InvoiceItem, TaxBreakdown, TemplateId, CustomTemplateConfig } from '@/types/invoice';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -17,6 +17,7 @@ interface InvoiceStore {
   updateTaxConfig: (data: Partial<InvoiceData['taxConfig']>) => void;
   updateBankDetails: (data: Partial<InvoiceData['bankDetails']>) => void;
   updateCustomization: (data: Partial<InvoiceData['customization']>) => void;
+  updateCustomTemplateConfig: (data: Partial<CustomTemplateConfig>) => void;
   setTemplate: (template: TemplateId) => void;
   computeTax: () => TaxBreakdown;
   loadSavedInvoice: (data: InvoiceData) => void;
@@ -103,6 +104,23 @@ const defaultInvoice: InvoiceData = {
     },
   },
   selectedTemplate: 'minimal',
+  customTemplateConfig: {
+    templateName: 'My Custom Template',
+    headerBg: '#1e293b',
+    headerTextColor: '#ffffff',
+    accentColor: '#6366f1',
+    pageBg: '#ffffff',
+    tableHeaderBg: '#f1f5f9',
+    tableHeaderTextColor: '#334155',
+    tableRowStriped: true,
+    tableBordered: false,
+    headerLayout: 'standard',
+    showDivider: true,
+    footerText: 'Thank you for your business!',
+    showSignatureArea: false,
+    pdfBackground: null,
+    pdfBackgroundOpacity: 0.15,
+  },
 };
 
 export const useInvoiceStore = create<InvoiceStore>()(
@@ -176,6 +194,14 @@ export const useInvoiceStore = create<InvoiceStore>()(
           },
         })),
 
+      updateCustomTemplateConfig: (data) =>
+        set((state) => ({
+          invoice: {
+            ...state.invoice,
+            customTemplateConfig: { ...state.invoice.customTemplateConfig, ...data },
+          },
+        })),
+
       setTemplate: (template) =>
         set((state) => ({ invoice: { ...state.invoice, selectedTemplate: template } })),
 
@@ -214,6 +240,21 @@ export const useInvoiceStore = create<InvoiceStore>()(
     {
       name: 'invoice-store',
       version: 1,
+      merge: (persisted, current) => {
+        const p = persisted as typeof current;
+        return {
+          ...current,
+          ...p,
+          invoice: {
+            ...current.invoice,
+            ...(p.invoice ?? {}),
+            customTemplateConfig: {
+              ...current.invoice.customTemplateConfig,
+              ...(p.invoice?.customTemplateConfig ?? {}),
+            },
+          },
+        };
+      },
     }
   )
 );

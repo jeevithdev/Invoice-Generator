@@ -67,6 +67,24 @@ export interface BankDetails {
   branchName: string;
 }
 
+export interface CustomTemplateConfig {
+  templateName: string;
+  headerBg: string;
+  headerTextColor: string;
+  accentColor: string;
+  pageBg: string;
+  tableHeaderBg: string;
+  tableHeaderTextColor: string;
+  tableRowStriped: boolean;
+  tableBordered: boolean;
+  headerLayout: 'standard' | 'centered' | 'reversed';
+  showDivider: boolean;
+  footerText: string;
+  showSignatureArea: boolean;
+  pdfBackground: string | null;
+  pdfBackgroundOpacity: number;
+}
+
 export type TemplateId =
   | 'minimal'
   | 'corporate'
@@ -92,7 +110,8 @@ export type TemplateId =
   | 'executive'
   | 'soft-green'
   | 'crimson'
-  | 'mono-grid';
+  | 'mono-grid'
+  | 'custom';
 
 export interface InvoiceData {
   invoiceNumber: string;
@@ -108,6 +127,7 @@ export interface InvoiceData {
   terms: string;
   customization: InvoiceCustomization;
   selectedTemplate: TemplateId;
+  customTemplateConfig: CustomTemplateConfig;
 }
 
 export interface TaxBreakdown {

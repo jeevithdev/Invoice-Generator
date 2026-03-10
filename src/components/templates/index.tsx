@@ -25,6 +25,7 @@ import { ExecutiveTemplate } from './ExecutiveTemplate';
 import { SoftGreenTemplate } from './SoftGreenTemplate';
 import { CrimsonTemplate } from './CrimsonTemplate';
 import { MonoGridTemplate } from './MonoGridTemplate';
+import { CustomTemplate } from './CustomTemplate';
 
 export interface TemplateProps {
   invoice: InvoiceData;
@@ -57,6 +58,7 @@ export const TEMPLATES: { id: TemplateId; name: string; description: string; pre
   { id: 'soft-green', name: 'Soft Green', description: 'Calm green palette with gentle card sections', preview: '🌿' },
   { id: 'crimson', name: 'Crimson Editorial', description: 'Rose-toned editorial layout with clear hierarchy', preview: '🟥' },
   { id: 'mono-grid', name: 'Mono Grid', description: 'Monospace invoice with strict grid alignment', preview: '⌗' },
+  { id: 'custom', name: 'My Custom Template', description: 'Your own fully customizable template', preview: '🎨' },
 ];
 
 export function TemplateRenderer({ invoice, tax }: TemplateProps) {
@@ -85,6 +87,7 @@ export function TemplateRenderer({ invoice, tax }: TemplateProps) {
     case 'soft-green': return <SoftGreenTemplate invoice={invoice} tax={tax} />;
     case 'crimson': return <CrimsonTemplate invoice={invoice} tax={tax} />;
     case 'mono-grid': return <MonoGridTemplate invoice={invoice} tax={tax} />;
+    case 'custom': return <CustomTemplate invoice={invoice} tax={tax} />;
     default: return <MinimalTemplate invoice={invoice} tax={tax} />;
   }
 }
