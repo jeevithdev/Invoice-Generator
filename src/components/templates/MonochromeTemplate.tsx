@@ -1,4 +1,4 @@
-import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection } from './TemplateShared';
+import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection , fmtDate } from './TemplateShared';
 import { formatCurrency } from '@/utils/format';
 
 // ─────────────────────────────────────────────
@@ -40,12 +40,12 @@ export function MonochromeTemplate({ invoice, tax }: TemplateProps) {
       <div className="grid grid-cols-4 gap-6 mb-8 pb-8" style={{ borderBottom: '1px solid #ddd' }}>
         <div>
           <p className="text-xs uppercase tracking-[0.15em] text-gray-400 mb-1">Issue Date</p>
-          <p className="text-sm font-bold text-black">{invoice.invoiceDate}</p>
+          <p className="text-sm font-bold text-black">{fmtDate(invoice, invoice.invoiceDate)}</p>
         </div>
         {invoice.dueDate && (
           <div>
             <p className="text-xs uppercase tracking-[0.15em] text-gray-400 mb-1">Due Date</p>
-            <p className="text-sm font-bold text-black">{invoice.dueDate}</p>
+            <p className="text-sm font-bold text-black">{fmtDate(invoice, invoice.dueDate)}</p>
           </div>
         )}
         <div>

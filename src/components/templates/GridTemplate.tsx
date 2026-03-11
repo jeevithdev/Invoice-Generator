@@ -1,4 +1,4 @@
-import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection } from './TemplateShared';
+import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection , fmtDate, invoiceTitle } from './TemplateShared';
 import { formatCurrency } from '@/utils/format';
 
 // ─────────────────────────────────────────────
@@ -9,7 +9,7 @@ export function GridTemplate({ invoice, tax }: TemplateProps) {
   const cols = invoice.customization.columnNames;
 
   return (
-    <div className="bg-gray-50 w-full min-h-[1000px] p-10 font-sans" style={{ fontFamily: 'Inter, sans-serif' }}>
+    <div className="bg-gray-50 w-full min-h-[1000px] p-10 font-sans" style={{ fontFamily: 'inherit' }}>
       {/* Header card */}
       <div className="bg-white rounded-2xl shadow-sm p-8 mb-6">
         <div className="flex justify-between items-start">
@@ -29,7 +29,7 @@ export function GridTemplate({ invoice, tax }: TemplateProps) {
               className="inline-block px-4 py-1.5 rounded-full text-white text-sm font-bold mb-3"
               style={{ backgroundColor: accent }}
             >
-              INVOICE
+              {invoiceTitle(invoice)}
             </div>
             <p className="text-2xl font-black text-gray-900">#{invoice.invoiceNumber}</p>
           </div>
@@ -47,8 +47,8 @@ export function GridTemplate({ invoice, tax }: TemplateProps) {
           {invoice.client.gstin && <p className="text-gray-400 text-xs">GSTIN: {invoice.client.gstin}</p>}
         </InfoCard>
         <InfoCard label="Invoice Date" accent={accent}>
-          <p className="text-2xl font-bold text-gray-900">{invoice.invoiceDate}</p>
-          {invoice.dueDate && <p className="text-xs text-gray-500 mt-1">Due: {invoice.dueDate}</p>}
+          <p className="text-2xl font-bold text-gray-900">{fmtDate(invoice, invoice.invoiceDate)}</p>
+          {invoice.dueDate && <p className="text-xs text-gray-500 mt-1">Due: {fmtDate(invoice, invoice.dueDate)}</p>}
         </InfoCard>
         <InfoCard label="Amount Due" accent={accent}>
           <p className="text-2xl font-bold" style={{ color: accent }}>{formatCurrency(tax.grandTotal, invoice.currency)}</p>

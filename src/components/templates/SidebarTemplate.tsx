@@ -1,4 +1,4 @@
-import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection } from './TemplateShared';
+import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection , fmtDate } from './TemplateShared';
 import { formatCurrency } from '@/utils/format';
 
 // ─────────────────────────────────────────────
@@ -9,7 +9,7 @@ export function SidebarTemplate({ invoice, tax }: TemplateProps) {
   const cols = invoice.customization.columnNames;
 
   return (
-    <div className="bg-white w-full flex" style={{ fontFamily: 'Inter, sans-serif', minHeight: 1122, height: '100%' }}>
+    <div className="bg-white w-full flex" style={{ fontFamily: 'inherit', minHeight: 1122, height: '100%' }}>
       {/* Left accent sidebar */}
       <div
         className="w-56 flex-shrink-0 flex flex-col px-6 py-10"
@@ -41,12 +41,12 @@ export function SidebarTemplate({ invoice, tax }: TemplateProps) {
         <div className="mb-8 pb-8 space-y-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.25)' }}>
           <div>
             <p className="text-white/60 text-xs uppercase tracking-widest mb-1">Issued</p>
-            <p className="text-white text-sm font-semibold">{invoice.invoiceDate}</p>
+            <p className="text-white text-sm font-semibold">{fmtDate(invoice, invoice.invoiceDate)}</p>
           </div>
           {invoice.dueDate && (
             <div>
               <p className="text-white/60 text-xs uppercase tracking-widest mb-1">Due</p>
-              <p className="text-white text-sm font-semibold">{invoice.dueDate}</p>
+              <p className="text-white text-sm font-semibold">{fmtDate(invoice, invoice.dueDate)}</p>
             </div>
           )}
           <div>

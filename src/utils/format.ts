@@ -22,6 +22,22 @@ export function formatCurrency(amount: number, currency: string): string {
   })}`;
 }
 
+export function formatDate(dateStr: string, fmt: string): string {
+  if (!dateStr) return dateStr;
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return dateStr;
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  switch (fmt) {
+    case 'DD/MM/YYYY': return `${dd}/${mm}/${yyyy}`;
+    case 'MM/DD/YYYY': return `${mm}/${dd}/${yyyy}`;
+    case 'DD MMM YYYY': return `${dd} ${MONTHS[d.getMonth()]} ${yyyy}`;
+    default: return `${yyyy}-${mm}-${dd}`; // YYYY-MM-DD
+  }
+}
+
 export function numberToWords(num: number): string {
   if (num === 0) return 'Zero';
   const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',

@@ -91,11 +91,22 @@ const defaultInvoice: InvoiceData = {
     accentColor: '#6366f1',
     secondaryColor: '#f1f5f9',
     fontFamily: 'inter',
+    fontSize: 'md',
+    borderRadius: 'md',
+    invoiceTitle: 'INVOICE',
+    dateFormat: 'YYYY-MM-DD',
+    watermarkText: 'PAID',
+    customHeaderNote: '',
+    customFooterNote: '',
+    pageSize: 'A4',
     showLogo: true,
     showGSTBreakdown: true,
     showBankDetails: true,
     showNotes: true,
     showTerms: true,
+    showWatermark: false,
+    showCustomHeaderNote: false,
+    showCustomFooterNote: false,
     columnNames: {
       description: 'Description',
       quantity: 'Qty',
@@ -248,6 +259,14 @@ export const useInvoiceStore = create<InvoiceStore>()(
           invoice: {
             ...current.invoice,
             ...(p.invoice ?? {}),
+            customization: {
+              ...current.invoice.customization,
+              ...(p.invoice?.customization ?? {}),
+              columnNames: {
+                ...current.invoice.customization.columnNames,
+                ...(p.invoice?.customization?.columnNames ?? {}),
+              },
+            },
             customTemplateConfig: {
               ...current.invoice.customTemplateConfig,
               ...(p.invoice?.customTemplateConfig ?? {}),

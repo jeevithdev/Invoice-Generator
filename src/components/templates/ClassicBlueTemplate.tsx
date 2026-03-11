@@ -1,4 +1,4 @@
-import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection } from './TemplateShared';
+import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection , fmtDate } from './TemplateShared';
 import { formatCurrency } from '@/utils/format';
 
 // ─────────────────────────────────────────────
@@ -9,7 +9,7 @@ export function ClassicBlueTemplate({ invoice, tax }: TemplateProps) {
   const blue = '#1d4ed8';
 
   return (
-    <div className="bg-blue-50 w-full min-h-[1000px] p-10 font-sans" style={{ fontFamily: 'Inter, sans-serif' }}>
+    <div className="bg-blue-50 w-full min-h-[1000px] p-10 font-sans" style={{ fontFamily: 'inherit' }}>
       <div className="bg-white rounded-2xl border border-blue-200 overflow-hidden shadow-sm">
         <div className="px-10 py-7" style={{ backgroundColor: blue }}>
           <div className="flex justify-between items-center">
@@ -24,7 +24,7 @@ export function ClassicBlueTemplate({ invoice, tax }: TemplateProps) {
             <div className="text-right text-white">
               <p className="text-xs uppercase tracking-widest">Invoice</p>
               <p className="text-2xl font-black">#{invoice.invoiceNumber}</p>
-              <p className="text-sm text-blue-100">{invoice.invoiceDate}</p>
+              <p className="text-sm text-blue-100">{fmtDate(invoice, invoice.invoiceDate)}</p>
             </div>
           </div>
         </div>

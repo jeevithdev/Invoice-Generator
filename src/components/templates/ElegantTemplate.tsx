@@ -1,4 +1,4 @@
-import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection } from './TemplateShared';
+import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection , fmtDate } from './TemplateShared';
 import { formatCurrency } from '@/utils/format';
 
 // ─────────────────────────────────────────────
@@ -37,8 +37,8 @@ export function ElegantTemplate({ invoice, tax }: TemplateProps) {
           </h2>
           <div className="mt-2 space-y-1">
             <p className="text-sm text-gray-600">No: <strong className="text-gray-900">#{invoice.invoiceNumber}</strong></p>
-            <p className="text-sm text-gray-600">Dated: <strong>{invoice.invoiceDate}</strong></p>
-            {invoice.dueDate && <p className="text-sm text-gray-600">Due by: <strong>{invoice.dueDate}</strong></p>}
+            <p className="text-sm text-gray-600">Dated: <strong>{fmtDate(invoice, invoice.invoiceDate)}</strong></p>
+            {invoice.dueDate && <p className="text-sm text-gray-600">Due by: <strong>{fmtDate(invoice, invoice.dueDate)}</strong></p>}
           </div>
         </div>
       </div>

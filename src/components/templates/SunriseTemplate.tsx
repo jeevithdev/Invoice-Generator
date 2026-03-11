@@ -1,4 +1,4 @@
-import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection } from './TemplateShared';
+import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection , fmtDate } from './TemplateShared';
 import { formatCurrency } from '@/utils/format';
 
 export function SunriseTemplate({ invoice, tax }: TemplateProps) {
@@ -15,7 +15,7 @@ export function SunriseTemplate({ invoice, tax }: TemplateProps) {
             </div>
             <div className="text-right">
               <p className="font-semibold">#{invoice.invoiceNumber}</p>
-              <p className="text-sm text-white/90">{invoice.invoiceDate}</p>
+              <p className="text-sm text-white/90">{fmtDate(invoice, invoice.invoiceDate)}</p>
             </div>
           </div>
         </div>

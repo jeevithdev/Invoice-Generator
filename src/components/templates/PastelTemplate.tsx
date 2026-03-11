@@ -1,4 +1,4 @@
-import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection } from './TemplateShared';
+import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection , fmtDate } from './TemplateShared';
 import { formatCurrency } from '@/utils/format';
 
 // ─────────────────────────────────────────────
@@ -11,7 +11,7 @@ export function PastelTemplate({ invoice, tax }: TemplateProps) {
   return (
     <div
       className="w-full min-h-[1000px] p-10"
-      style={{ fontFamily: 'Inter, sans-serif', backgroundColor: '#f9f7ff' }}
+      style={{ fontFamily: 'inherit', backgroundColor: '#f9f7ff' }}
     >
       {/* Rounded card wrapper */}
       <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
@@ -62,7 +62,7 @@ export function PastelTemplate({ invoice, tax }: TemplateProps) {
                   style={{ backgroundColor: '#e8f5e9', color: '#2e7d32' }}
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />
-                  Issued {invoice.invoiceDate}
+                  Issued {fmtDate(invoice, invoice.invoiceDate)}
                 </span>
                 {invoice.dueDate && (
                   <span
@@ -70,7 +70,7 @@ export function PastelTemplate({ invoice, tax }: TemplateProps) {
                     style={{ backgroundColor: '#fff3e0', color: '#e65100' }}
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-orange-400 inline-block" />
-                    Due {invoice.dueDate}
+                    Due {fmtDate(invoice, invoice.dueDate)}
                   </span>
                 )}
               </div>

@@ -1,4 +1,4 @@
-import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection } from './TemplateShared';
+import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection , fmtDate } from './TemplateShared';
 import { formatCurrency } from '@/utils/format';
 
 export function CharcoalTemplate({ invoice, tax }: TemplateProps) {
@@ -15,8 +15,8 @@ export function CharcoalTemplate({ invoice, tax }: TemplateProps) {
           </div>
           <div className="text-right text-sm text-zinc-300">
             <p className="text-xl font-bold text-zinc-100">#{invoice.invoiceNumber}</p>
-            <p>{invoice.invoiceDate}</p>
-            {invoice.dueDate && <p>Due {invoice.dueDate}</p>}
+            <p>{fmtDate(invoice, invoice.invoiceDate)}</p>
+            {invoice.dueDate && <p>Due {fmtDate(invoice, invoice.dueDate)}</p>}
           </div>
         </div>
 

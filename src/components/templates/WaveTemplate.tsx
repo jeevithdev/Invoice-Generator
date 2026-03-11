@@ -1,4 +1,4 @@
-import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection } from './TemplateShared';
+import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection , fmtDate } from './TemplateShared';
 import { formatCurrency } from '@/utils/format';
 
 export function WaveTemplate({ invoice, tax }: TemplateProps) {
@@ -16,8 +16,8 @@ export function WaveTemplate({ invoice, tax }: TemplateProps) {
             </div>
             <div className="text-right text-sm text-slate-600">
               <p className="font-bold text-slate-900">#{invoice.invoiceNumber}</p>
-              <p>{invoice.invoiceDate}</p>
-              {invoice.dueDate && <p>{invoice.dueDate}</p>}
+              <p>{fmtDate(invoice, invoice.invoiceDate)}</p>
+              {invoice.dueDate && <p>{fmtDate(invoice, invoice.dueDate)}</p>}
             </div>
           </div>
 

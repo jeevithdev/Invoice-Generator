@@ -46,11 +46,22 @@ export interface InvoiceCustomization {
   accentColor: string;
   secondaryColor: string;
   fontFamily: string;
+  fontSize: 'sm' | 'md' | 'lg';
+  borderRadius: 'none' | 'sm' | 'md' | 'lg';
+  invoiceTitle: string;
+  dateFormat: 'YYYY-MM-DD' | 'DD/MM/YYYY' | 'MM/DD/YYYY' | 'DD MMM YYYY';
+  watermarkText: string;
+  customHeaderNote: string;
+  customFooterNote: string;
+  pageSize: 'A4' | 'Letter';
   showLogo: boolean;
   showGSTBreakdown: boolean;
   showBankDetails: boolean;
   showNotes: boolean;
   showTerms: boolean;
+  showWatermark: boolean;
+  showCustomHeaderNote: boolean;
+  showCustomFooterNote: boolean;
   columnNames: {
     description: string;
     quantity: string;

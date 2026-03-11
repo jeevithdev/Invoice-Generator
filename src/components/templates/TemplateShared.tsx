@@ -1,9 +1,19 @@
 import { InvoiceData, TaxBreakdown } from '@/types/invoice';
-import { formatCurrency, taxSummaryRows, numberToWords } from '@/utils/format';
+import { formatCurrency, formatDate, taxSummaryRows, numberToWords } from '@/utils/format';
 
 export interface TemplateProps {
   invoice: InvoiceData;
   tax: TaxBreakdown;
+}
+
+/** Format a date string using the customization dateFormat setting */
+export function fmtDate(invoice: InvoiceData, dateStr: string): string {
+  return formatDate(dateStr, invoice.customization.dateFormat ?? 'YYYY-MM-DD');
+}
+
+/** Returns the custom invoice title (e.g. "TAX INVOICE") or "INVOICE" */
+export function invoiceTitle(invoice: InvoiceData): string {
+  return invoice.customization.invoiceTitle?.trim() || 'INVOICE';
 }
 
 // Shared sub-components used across templates

@@ -1,4 +1,4 @@
-import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection } from './TemplateShared';
+import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection , fmtDate } from './TemplateShared';
 import { formatCurrency } from '@/utils/format';
 
 export function LedgerTemplate({ invoice, tax }: TemplateProps) {
@@ -14,8 +14,8 @@ export function LedgerTemplate({ invoice, tax }: TemplateProps) {
           </div>
           <div className="text-right text-sm">
             <p className="font-bold">Invoice #{invoice.invoiceNumber}</p>
-            <p>{invoice.invoiceDate}</p>
-            {invoice.dueDate && <p>Due {invoice.dueDate}</p>}
+            <p>{fmtDate(invoice, invoice.invoiceDate)}</p>
+            {invoice.dueDate && <p>Due {fmtDate(invoice, invoice.dueDate)}</p>}
           </div>
         </div>
 

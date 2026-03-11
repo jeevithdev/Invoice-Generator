@@ -1,4 +1,4 @@
-import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection } from './TemplateShared';
+import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection , fmtDate } from './TemplateShared';
 import { formatCurrency } from '@/utils/format';
 
 export function OceanicTemplate({ invoice, tax }: TemplateProps) {
@@ -15,7 +15,7 @@ export function OceanicTemplate({ invoice, tax }: TemplateProps) {
             </div>
             <div className="text-right text-sm">
               <p className="font-bold text-lg">#{invoice.invoiceNumber}</p>
-              <p>{invoice.invoiceDate}</p>
+              <p>{fmtDate(invoice, invoice.invoiceDate)}</p>
             </div>
           </div>
         </div>

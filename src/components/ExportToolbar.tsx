@@ -186,6 +186,24 @@ function convertModernColor(funcName: string, inner: string): string {
 }
 
 /**
+ * Converts 8-digit hex (#RRGGBBAA) to rgba() — html2canvas cannot parse 8-digit hex.
+ * Also handles 4-digit hex (#RGBA).
+ */
+function expand8DigitHex(text: string): string {
+  // #RRGGBBAA → rgba(R,G,B,A)
+  text = text.replace(/#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})\b/gi,
+    (_, r, g, b, a) =>
+      `rgba(${parseInt(r,16)},${parseInt(g,16)},${parseInt(b,16)},${+(parseInt(a,16)/255).toFixed(4)})`
+  );
+  // #RGBA → rgba(R,G,B,A)
+  text = text.replace(/#([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])\b/gi,
+    (_, r, g, b, a) =>
+      `rgba(${parseInt(r+r,16)},${parseInt(g+g,16)},${parseInt(b+b,16)},${+(parseInt(a+a,16)/255).toFixed(4)})`
+  );
+  return text;
+}
+
+/**
  * Replaces ALL CSS Color Level 4+ functions in a CSS text string with
  * rgb()/rgba() equivalents that html2canvas can parse.
  * Uses paren-depth tracking for correct handling of nested functions.
@@ -282,17 +300,53 @@ async function fixClonedDoc(clonedDoc: Document): Promise<void> {
   clonedDoc.querySelectorAll('style').forEach((el) => {
     if (el.textContent) {
       el.textContent = stripLetterWordSpacing(
-        replaceModernColorFunctions(substituteVars(el.textContent)),
+        expand8DigitHex(replaceModernColorFunctions(substituteVars(el.textContent))),
       );
     }
   });
 
-  // Step 4a: Clear any inline letter-spacing / word-spacing set directly on elements
-  // (e.g. via React style props or framework-injected inline styles). CSS overrides alone
-  // won't beat inline styles in html2canvas's computed-style reader.
+  // Step 4a: Fix inline styles on every element:
+  //   - letter-spacing / word-spacing → reset
+  //   - 8-digit hex (#RRGGBBAA) → rgba()
+  //   - modern color functions (oklch/oklab/color-mix/etc.) → rgb()/rgba()
+  //   - CSS variable references → substitute from varMap
+  //   - also collect any element-level CSS vars into varMap first
   clonedDoc.querySelectorAll<HTMLElement>('*').forEach((el) => {
-    if (el.style.letterSpacing) el.style.letterSpacing = '0';
-    if (el.style.wordSpacing) el.style.wordSpacing = 'normal';
+    const style = el.style;
+    if (!style || style.length === 0) return;
+
+    // Collect CSS vars from inline styles into varMap (e.g. --invoice-accent on root element)
+    for (let i = 0; i < style.length; i++) {
+      const prop = style[i];
+      if (prop.startsWith('--')) {
+        const val = style.getPropertyValue(prop).trim();
+        if (val && !varMap.has(prop)) varMap.set(prop, val);
+      }
+    }
+  });
+
+  clonedDoc.querySelectorAll<HTMLElement>('*').forEach((el) => {
+    const style = el.style;
+    if (!style || style.length === 0) return;
+
+    if (style.letterSpacing) style.letterSpacing = '0';
+    if (style.wordSpacing) style.wordSpacing = 'normal';
+
+    // Fix ALL inline style properties that may contain colors or var() refs
+    // (covers background, border shorthand, color, fill, etc.)
+    const props: string[] = [];
+    for (let i = 0; i < style.length; i++) props.push(style[i]);
+    for (const prop of props) {
+      if (prop.startsWith('--')) continue; // skip CSS vars themselves
+      const val = style.getPropertyValue(prop);
+      if (!val) continue;
+      // Only process if it might contain a color value
+      if (!/oklch|oklab|lab|lch|hwb|color-mix|color\s*\(|var\s*\(|#[0-9a-f]{8}|#[0-9a-f]{4}\b/i.test(val)) continue;
+      const fixed = expand8DigitHex(replaceModernColorFunctions(substituteVars(val)));
+      if (fixed !== val) {
+        try { style.setProperty(prop, fixed, style.getPropertyPriority(prop)); } catch { /* skip */ }
+      }
+    }
   });
 
   // Step 4b: Belt-and-suspenders CSS override for anything computed via cascade.
@@ -317,12 +371,17 @@ export function ExportToolbar() {
     // Encode invoice data into the PDF Subject metadata for roundtrip loading
     const encodedData = btoa(encodeURIComponent(JSON.stringify(invoice)));
 
+    const pageSize = invoice.customization?.pageSize ?? 'A4';
+    // A4: 794px / 210×297mm  |  Letter: 816px / 215.9×279.4mm
+    const pageWidthPx  = pageSize === 'Letter' ? 816 : 794;
+    const jsPDFFormat  = pageSize === 'Letter' ? [215.9, 279.4] as [number, number] : 'a4';
+
     const opts = {
       margin: 0,
       filename: `Invoice-${invoice.invoiceNumber}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, onclone: fixClonedDoc, scrollX: 0, scrollY: 0, windowWidth: 794 },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const },
+      html2canvas: { scale: 2, useCORS: true, onclone: fixClonedDoc, scrollX: 0, scrollY: 0, windowWidth: pageWidthPx },
+      jsPDF: { unit: 'mm', format: jsPDFFormat, orientation: 'portrait' as const },
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

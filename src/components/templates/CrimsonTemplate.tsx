@@ -1,4 +1,4 @@
-import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection } from './TemplateShared';
+import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection , fmtDate } from './TemplateShared';
 import { formatCurrency } from '@/utils/format';
 
 // ─────────────────────────────────────────────
@@ -9,7 +9,7 @@ export function CrimsonTemplate({ invoice, tax }: TemplateProps) {
   const accent = '#b91c1c';
 
   return (
-    <div className="bg-rose-50 w-full min-h-[1000px] p-10 font-sans" style={{ fontFamily: 'Inter, sans-serif' }}>
+    <div className="bg-rose-50 w-full min-h-[1000px] p-10 font-sans" style={{ fontFamily: 'inherit' }}>
       <div className="bg-white border border-rose-200 rounded-2xl overflow-hidden shadow-sm">
         <div className="px-8 py-6 border-b" style={{ borderColor: '#fecdd3' }}>
           <div className="flex justify-between items-center">
@@ -19,7 +19,7 @@ export function CrimsonTemplate({ invoice, tax }: TemplateProps) {
             </div>
             <div className="text-right">
               <p className="text-2xl font-black text-slate-900">#{invoice.invoiceNumber}</p>
-              <p className="text-sm text-slate-500">{invoice.invoiceDate}</p>
+              <p className="text-sm text-slate-500">{fmtDate(invoice, invoice.invoiceDate)}</p>
             </div>
           </div>
         </div>

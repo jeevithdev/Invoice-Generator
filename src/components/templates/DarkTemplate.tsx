@@ -1,4 +1,4 @@
-import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection } from './TemplateShared';
+import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection , fmtDate } from './TemplateShared';
 import { formatCurrency } from '@/utils/format';
 
 // ─────────────────────────────────────────────
@@ -9,7 +9,7 @@ export function DarkTemplate({ invoice, tax }: TemplateProps) {
   const cols = invoice.customization.columnNames;
 
   return (
-    <div className="w-full min-h-[1000px] p-12 font-sans" style={{ backgroundColor: '#0f0f0f', fontFamily: 'Inter, sans-serif', color: '#e2e8f0' }}>
+    <div className="w-full min-h-[1000px] p-12 font-sans" style={{ backgroundColor: '#0f0f0f', fontFamily: 'inherit', color: '#e2e8f0' }}>
       {/* Header */}
       <div className="flex justify-between items-start mb-10">
         <div>
@@ -32,8 +32,8 @@ export function DarkTemplate({ invoice, tax }: TemplateProps) {
         <div className="text-right">
           <h2 className="text-5xl font-black tracking-widest" style={{ color: accent }}>INV</h2>
           <p className="text-white font-bold text-lg mt-1">#{invoice.invoiceNumber}</p>
-          <p className="text-sm mt-2" style={{ color: '#94a3b8' }}>{invoice.invoiceDate}</p>
-          {invoice.dueDate && <p className="text-sm" style={{ color: '#94a3b8' }}>Due {invoice.dueDate}</p>}
+          <p className="text-sm mt-2" style={{ color: '#94a3b8' }}>{fmtDate(invoice, invoice.invoiceDate)}</p>
+          {invoice.dueDate && <p className="text-sm" style={{ color: '#94a3b8' }}>Due {fmtDate(invoice, invoice.dueDate)}</p>}
         </div>
       </div>
 

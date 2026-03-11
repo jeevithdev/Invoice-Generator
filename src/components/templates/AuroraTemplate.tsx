@@ -1,4 +1,4 @@
-import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection } from './TemplateShared';
+import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection , fmtDate } from './TemplateShared';
 
 export function AuroraTemplate({ invoice, tax }: TemplateProps) {
   const accent = invoice.customization.accentColor;
@@ -17,8 +17,8 @@ export function AuroraTemplate({ invoice, tax }: TemplateProps) {
           <div className="text-right">
             <p className="text-xs text-slate-500 uppercase tracking-wide">Invoice No.</p>
             <p className="text-xl font-bold">#{invoice.invoiceNumber}</p>
-            <p className="text-sm text-slate-500 mt-2">Date: {invoice.invoiceDate}</p>
-            {invoice.dueDate && <p className="text-sm text-slate-500">Due: {invoice.dueDate}</p>}
+            <p className="text-sm text-slate-500 mt-2">Date: {fmtDate(invoice, invoice.invoiceDate)}</p>
+            {invoice.dueDate && <p className="text-sm text-slate-500">Due: {fmtDate(invoice, invoice.dueDate)}</p>}
           </div>
         </div>
 

@@ -1,4 +1,4 @@
-import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection } from './TemplateShared';
+import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection , fmtDate } from './TemplateShared';
 import { formatCurrency } from '@/utils/format';
 
 export function TerminalTemplate({ invoice, tax }: TemplateProps) {
@@ -15,8 +15,8 @@ export function TerminalTemplate({ invoice, tax }: TemplateProps) {
           </div>
           <div className="text-right text-sm">
             <p className="font-bold">ID: {invoice.invoiceNumber}</p>
-            <p>DATE: {invoice.invoiceDate}</p>
-            {invoice.dueDate && <p>DUE: {invoice.dueDate}</p>}
+            <p>DATE: {fmtDate(invoice, invoice.invoiceDate)}</p>
+            {invoice.dueDate && <p>DUE: {fmtDate(invoice, invoice.dueDate)}</p>}
           </div>
         </div>
 

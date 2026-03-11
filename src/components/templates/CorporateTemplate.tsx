@@ -1,4 +1,4 @@
-import { TemplateProps, ItemsTableBody, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection } from './TemplateShared';
+import { TemplateProps, ItemsTableBody, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection , fmtDate, invoiceTitle } from './TemplateShared';
 
 // ─────────────────────────────────────────────
 // TEMPLATE 2: Corporate Modern (colored header)
@@ -8,7 +8,7 @@ export function CorporateTemplate({ invoice, tax }: TemplateProps) {
   const cols = invoice.customization.columnNames;
 
   return (
-    <div className="bg-white w-full min-h-[1000px] font-sans" style={{ fontFamily: 'Inter, sans-serif' }}>
+    <div className="bg-white w-full min-h-[1000px] font-sans" style={{ fontFamily: 'inherit' }}>
       {/* Colored Header Band */}
       <div className="px-12 py-8" style={{ backgroundColor: accent }}>
         <div className="flex justify-between items-center">
@@ -21,7 +21,7 @@ export function CorporateTemplate({ invoice, tax }: TemplateProps) {
             <p className="text-white/80 text-sm">{invoice.company.name}</p>
           </div>
           <div className="text-right">
-            <h2 className="text-5xl font-black text-white/20 tracking-widest">INVOICE</h2>
+            <h2 className="text-5xl font-black text-white/20 tracking-widest">{invoiceTitle(invoice)}</h2>
             <p className="text-white font-bold text-lg mt-1">#{invoice.invoiceNumber}</p>
           </div>
         </div>
@@ -31,12 +31,12 @@ export function CorporateTemplate({ invoice, tax }: TemplateProps) {
       <div className="flex gap-8 px-12 py-4" style={{ backgroundColor: accent + 'CC' }}>
         <div className="text-white/90 text-xs">
           <p className="font-semibold uppercase tracking-wide opacity-70">Issue Date</p>
-          <p className="font-bold text-sm">{invoice.invoiceDate}</p>
+          <p className="font-bold text-sm">{fmtDate(invoice, invoice.invoiceDate)}</p>
         </div>
         {invoice.dueDate && (
           <div className="text-white/90 text-xs">
             <p className="font-semibold uppercase tracking-wide opacity-70">Due Date</p>
-            <p className="font-bold text-sm">{invoice.dueDate}</p>
+            <p className="font-bold text-sm">{fmtDate(invoice, invoice.dueDate)}</p>
           </div>
         )}
         <div className="text-white/90 text-xs ml-auto">

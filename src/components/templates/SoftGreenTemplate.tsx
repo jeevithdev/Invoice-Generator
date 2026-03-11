@@ -1,4 +1,4 @@
-import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection } from './TemplateShared';
+import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection , fmtDate } from './TemplateShared';
 import { formatCurrency } from '@/utils/format';
 
 // ─────────────────────────────────────────────
@@ -9,7 +9,7 @@ export function SoftGreenTemplate({ invoice, tax }: TemplateProps) {
   const accent = '#15803d';
 
   return (
-    <div className="bg-emerald-50 w-full min-h-[1000px] p-10 font-sans" style={{ fontFamily: 'Inter, sans-serif' }}>
+    <div className="bg-emerald-50 w-full min-h-[1000px] p-10 font-sans" style={{ fontFamily: 'inherit' }}>
       <div className="bg-white rounded-2xl border border-emerald-200 shadow-sm p-8">
         <div className="flex justify-between items-start mb-8">
           <div>
@@ -22,7 +22,7 @@ export function SoftGreenTemplate({ invoice, tax }: TemplateProps) {
           <div className="text-right">
             <p className="text-xs uppercase tracking-widest" style={{ color: accent }}>Invoice</p>
             <p className="text-2xl font-black text-slate-900">#{invoice.invoiceNumber}</p>
-            <p className="text-sm text-slate-500">{invoice.invoiceDate}</p>
+            <p className="text-sm text-slate-500">{fmtDate(invoice, invoice.invoiceDate)}</p>
           </div>
         </div>
 

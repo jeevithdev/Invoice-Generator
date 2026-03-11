@@ -1,4 +1,4 @@
-import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection } from './TemplateShared';
+import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection , fmtDate } from './TemplateShared';
 import { formatCurrency } from '@/utils/format';
 
 export function LuxeTemplate({ invoice, tax }: TemplateProps) {
@@ -17,7 +17,7 @@ export function LuxeTemplate({ invoice, tax }: TemplateProps) {
           <div className="text-right border border-amber-300 px-4 py-3 bg-amber-50">
             <p className="text-xs uppercase tracking-widest text-amber-700">Invoice</p>
             <p className="text-2xl font-semibold">#{invoice.invoiceNumber}</p>
-            <p className="text-sm text-neutral-600">{invoice.invoiceDate}</p>
+            <p className="text-sm text-neutral-600">{fmtDate(invoice, invoice.invoiceDate)}</p>
           </div>
         </div>
 

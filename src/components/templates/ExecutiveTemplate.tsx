@@ -1,4 +1,4 @@
-import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection } from './TemplateShared';
+import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection , fmtDate } from './TemplateShared';
 import { formatCurrency } from '@/utils/format';
 
 // ─────────────────────────────────────────────
@@ -9,7 +9,7 @@ export function ExecutiveTemplate({ invoice, tax }: TemplateProps) {
   const accent = '#334155';
 
   return (
-    <div className="bg-white w-full min-h-[1000px] p-12 font-sans" style={{ fontFamily: 'Inter, sans-serif' }}>
+    <div className="bg-white w-full min-h-[1000px] p-12 font-sans" style={{ fontFamily: 'inherit' }}>
       <div className="flex justify-between items-start mb-10">
         <div>
           {invoice.customization.showLogo && invoice.company.logo && (
@@ -22,8 +22,8 @@ export function ExecutiveTemplate({ invoice, tax }: TemplateProps) {
         <div className="text-right">
           <p className="text-xs uppercase tracking-[0.25em] text-slate-400">Invoice</p>
           <p className="text-4xl font-light text-slate-900 mt-1">#{invoice.invoiceNumber}</p>
-          <p className="text-sm text-slate-500 mt-2">Issued {invoice.invoiceDate}</p>
-          {invoice.dueDate && <p className="text-sm text-slate-500">Due {invoice.dueDate}</p>}
+          <p className="text-sm text-slate-500 mt-2">Issued {fmtDate(invoice, invoice.invoiceDate)}</p>
+          {invoice.dueDate && <p className="text-sm text-slate-500">Due {fmtDate(invoice, invoice.dueDate)}</p>}
         </div>
       </div>
 

@@ -1,4 +1,4 @@
-import { TemplateProps, ItemsTableBody, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection } from './TemplateShared';
+import { TemplateProps, ItemsTableBody, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection, fmtDate, invoiceTitle } from './TemplateShared';
 import { formatCurrency } from '@/utils/format';
 
 // ─────────────────────────────────────────────
@@ -9,7 +9,7 @@ export function MinimalTemplate({ invoice, tax }: TemplateProps) {
   const cols = invoice.customization.columnNames;
 
   return (
-    <div className="bg-white w-full min-h-[1000px] p-12 font-sans" style={{ fontFamily: 'Inter, sans-serif' }}>
+    <div className="bg-white w-full min-h-[1000px] p-12 font-sans" style={{ fontFamily: 'inherit' }}>
       {/* Header */}
       <div className="flex justify-between items-start mb-10">
         <div>
@@ -23,11 +23,11 @@ export function MinimalTemplate({ invoice, tax }: TemplateProps) {
           {invoice.company.gstin && <p className="text-xs text-gray-400 mt-1">GSTIN: {invoice.company.gstin}</p>}
         </div>
         <div className="text-right">
-          <h2 className="text-4xl font-light tracking-wider" style={{ color: accent }}>INVOICE</h2>
+          <h2 className="text-4xl font-light tracking-wider" style={{ color: accent }}>{invoiceTitle(invoice)}</h2>
           <div className="mt-3 text-sm text-gray-600 space-y-1">
             <p><span className="font-medium text-gray-800">#{invoice.invoiceNumber}</span></p>
-            <p>Date: {invoice.invoiceDate}</p>
-            {invoice.dueDate && <p>Due: {invoice.dueDate}</p>}
+            <p>Date: {fmtDate(invoice, invoice.invoiceDate)}</p>
+            {invoice.dueDate && <p>Due: {fmtDate(invoice, invoice.dueDate)}</p>}
           </div>
         </div>
       </div>

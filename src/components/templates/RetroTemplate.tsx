@@ -1,4 +1,4 @@
-import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection } from './TemplateShared';
+import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection , fmtDate } from './TemplateShared';
 import { formatCurrency } from '@/utils/format';
 
 // ─────────────────────────────────────────────
@@ -62,8 +62,8 @@ export function RetroTemplate({ invoice, tax }: TemplateProps) {
                     #{invoice.invoiceNumber}
                   </p>
                   <div className="mt-2 text-xs text-gray-600 space-y-0.5">
-                    <p>Date: <span className="font-semibold">{invoice.invoiceDate}</span></p>
-                    {invoice.dueDate && <p>Due: <span className="font-semibold">{invoice.dueDate}</span></p>}
+                    <p>Date: <span className="font-semibold">{fmtDate(invoice, invoice.invoiceDate)}</span></p>
+                    {invoice.dueDate && <p>Due: <span className="font-semibold">{fmtDate(invoice, invoice.dueDate)}</span></p>}
                   </div>
                 </div>
               </div>

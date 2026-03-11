@@ -1,4 +1,4 @@
-import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection } from './TemplateShared';
+import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection , fmtDate } from './TemplateShared';
 import { formatCurrency } from '@/utils/format';
 
 // ─────────────────────────────────────────────
@@ -9,7 +9,7 @@ export function BoldTemplate({ invoice, tax }: TemplateProps) {
   const cols = invoice.customization.columnNames;
 
   return (
-    <div className="bg-white w-full min-h-[1000px] font-sans" style={{ fontFamily: 'Inter, sans-serif' }}>
+    <div className="bg-white w-full min-h-[1000px] font-sans" style={{ fontFamily: 'inherit' }}>
       {/* Big bold top bar */}
       <div className="flex" style={{ minHeight: 160 }}>
         <div className="flex-1 flex flex-col justify-center px-12 py-8" style={{ backgroundColor: accent }}>
@@ -27,8 +27,8 @@ export function BoldTemplate({ invoice, tax }: TemplateProps) {
         >
           <p className="text-6xl font-black text-white/20 leading-none">INV</p>
           <p className="text-white font-black text-2xl mt-1">#{invoice.invoiceNumber}</p>
-          <p className="text-white/70 text-sm mt-2">Date: {invoice.invoiceDate}</p>
-          {invoice.dueDate && <p className="text-white/70 text-sm">Due: {invoice.dueDate}</p>}
+          <p className="text-white/70 text-sm mt-2">Date: {fmtDate(invoice, invoice.invoiceDate)}</p>
+          {invoice.dueDate && <p className="text-white/70 text-sm">Due: {fmtDate(invoice, invoice.dueDate)}</p>}
         </div>
       </div>
 
