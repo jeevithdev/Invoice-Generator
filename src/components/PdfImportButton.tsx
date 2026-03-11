@@ -72,7 +72,7 @@ export function PdfImportButton() {
         title="Import an existing PDF invoice to pre-fill the form"
       >
         {loading ? <Loader2 size={13} className="animate-spin" /> : <FileUp size={13} />}
-        Import PDF
+        <span className="hidden sm:inline">Import PDF</span>
       </button>
       <input
         ref={inputRef}

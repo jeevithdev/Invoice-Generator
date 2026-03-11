@@ -9,7 +9,7 @@ export function ElegantTemplate({ invoice, tax }: TemplateProps) {
   const cols = invoice.customization.columnNames;
 
   return (
-    <div className="bg-white w-full min-h-[1000px] p-12 font-sans" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+    <div className="bg-white w-full min-h-[1000px] p-12 font-sans" style={{ fontFamily: 'inherit' }}>
       {/* Ornamental top border */}
       <div className="flex items-center mb-8 gap-4">
         <div className="flex-1 h-px" style={{ backgroundColor: accent + '60' }} />

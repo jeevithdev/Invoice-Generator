@@ -127,11 +127,16 @@ function convertModernColor(funcName: string, inner: string): string {
         const rgba1 = resolveToRgba(p1.colorStr);
         const rgba2 = resolveToRgba(p2.colorStr);
         if (rgba1 && rgba2) {
-          // When mixing with transparent (opacity modifier pattern like text-white/70),
-          // return the solid color at full opacity so text stays the same color in the PDF
-          // instead of being alpha-blended against the background by html2canvas.
-          if (p1.colorStr === 'transparent') return `rgb(${rgba2[0]},${rgba2[1]},${rgba2[2]})`;
-          if (p2.colorStr === 'transparent') return `rgb(${rgba1[0]},${rgba1[1]},${rgba1[2]})`;
+          // When mixing with transparent, preserve alpha so bg-primary/20 etc render correctly.
+          // Tailwind opacity modifiers: color-mix(in oklab, <color> P%, transparent) = rgba at P% opacity
+          if (p1.colorStr === 'transparent') {
+            const a2 = +(p2.pct).toFixed(4);
+            return a2 >= 1 ? `rgb(${rgba2[0]},${rgba2[1]},${rgba2[2]})` : `rgba(${rgba2[0]},${rgba2[1]},${rgba2[2]},${a2})`;
+          }
+          if (p2.colorStr === 'transparent') {
+            const a1 = +(p1.pct).toFixed(4);
+            return a1 >= 1 ? `rgb(${rgba1[0]},${rgba1[1]},${rgba1[2]})` : `rgba(${rgba1[0]},${rgba1[1]},${rgba1[2]},${a1})`;
+          }
           const a = p1.pct * rgba1[3] + p2.pct * rgba2[3];
           if (a <= 0) return 'transparent';
           const mixR = clamp8((p1.pct * rgba1[3] * rgba1[0] + p2.pct * rgba2[3] * rgba2[0]) / a);
@@ -360,43 +365,48 @@ async function fixClonedDoc(clonedDoc: Document): Promise<void> {
 export function ExportToolbar() {
   const { invoice, loadSavedInvoice, resetInvoice } = useInvoiceStore();
 
-  const handleDownloadPDF = useCallback(async () => {
+  const handleDownloadPDF = useCallback(() => {
     const el = document.getElementById('invoice-preview-root');
     if (!el) return;
-
-    // Dynamically import html2pdf.js (browser-only)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const html2pdf = ((await import('html2pdf.js')) as any).default ?? (await import('html2pdf.js'));
-
-    // Encode invoice data into the PDF Subject metadata for roundtrip loading
-    const encodedData = btoa(encodeURIComponent(JSON.stringify(invoice)));
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
 
     const pageSize = invoice.customization?.pageSize ?? 'A4';
-    // A4: 794px / 210×297mm  |  Letter: 816px / 215.9×279.4mm
-    const pageWidthPx  = pageSize === 'Letter' ? 816 : 794;
-    const jsPDFFormat  = pageSize === 'Letter' ? [215.9, 279.4] as [number, number] : 'a4';
+    const pageCss = pageSize === 'Letter'
+      ? '@page { size: letter; margin: 0; }'
+      : '@page { size: A4; margin: 0; }';
 
-    const opts = {
-      margin: 0,
-      filename: `Invoice-${invoice.invoiceNumber}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, onclone: fixClonedDoc, scrollX: 0, scrollY: 0, windowWidth: pageWidthPx },
-      jsPDF: { unit: 'mm', format: jsPDFFormat, orientation: 'portrait' as const },
-    };
+    // Encode invoice data as a meta tag for roundtrip loading
+    const encodedData = btoa(encodeURIComponent(JSON.stringify(invoice)));
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (html2pdf() as any)
-      .set(opts)
-      .from(el)
-      .toPdf()
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .get('pdf').then((pdf: any) => {
-        pdf.setProperties({
-          title: `Invoice ${invoice.invoiceNumber}`,
-          subject: `INVOICE_DATA:${encodedData}`,
-        });
-      })
-      .save();
+    // Copy all stylesheets from current page so Tailwind CSS is fully available
+    const styleNodes = Array.from(
+      document.querySelectorAll<HTMLLinkElement | HTMLStyleElement>('link[rel="stylesheet"], style')
+    ).map(n => n.outerHTML).join('\n');
+
+    printWindow.document.write(`<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="invoice-data" content="${encodedData}">
+    <title>Invoice ${invoice.invoiceNumber}</title>
+    ${styleNodes}
+    <style>
+      ${pageCss}
+      html, body { margin: 0; padding: 0; background: white; }
+      @media print {
+        html, body { margin: 0; padding: 0; }
+        body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      }
+    </style>
+  </head>
+  <body>${el.outerHTML}</body>
+</html>`);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+    }, 800);
   }, [invoice]);
 
   const handlePrint = useCallback(() => {
@@ -404,14 +414,22 @@ export function ExportToolbar() {
     if (!el) return;
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
+    // Copy ALL stylesheets (link + style) from current page so Tailwind CSS is available
+    const styleNodes = Array.from(
+      document.querySelectorAll<HTMLLinkElement | HTMLStyleElement>('link[rel="stylesheet"], style')
+    ).map(n => n.outerHTML).join('\n');
     printWindow.document.write(`
+      <!DOCTYPE html>
       <html>
         <head>
+          <meta charset="utf-8">
           <title>Invoice ${invoice.invoiceNumber}</title>
+          ${styleNodes}
           <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-            body { margin: 0; font-family: Inter, sans-serif; }
-            @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+            body { margin: 0; }
+            @media print {
+              body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            }
           </style>
         </head>
         <body>${el.outerHTML}</body>
@@ -422,7 +440,7 @@ export function ExportToolbar() {
     setTimeout(() => {
       printWindow.print();
       printWindow.close();
-    }, 500);
+    }, 800);
   }, [invoice.invoiceNumber]);
 
   const handleSave = useCallback(() => {
@@ -447,7 +465,8 @@ export function ExportToolbar() {
       const reader = new FileReader();
 
       if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
-        // PDF: extract invoice JSON embedded in the Subject metadata field
+        // PDF: extract invoice JSON embedded as a meta tag (browser print-to-PDF)
+        // or in jsPDF Subject metadata (legacy image-based PDFs)
         reader.onload = (ev) => {
           try {
             const buffer = ev.target?.result as ArrayBuffer;
@@ -456,15 +475,24 @@ export function ExportToolbar() {
             let pdfText = '';
             for (let i = 0; i < bytes.length; i++) pdfText += String.fromCharCode(bytes[i]);
 
-            const marker = 'INVOICE_DATA:';
-            const markerIdx = pdfText.indexOf(marker);
-            if (markerIdx === -1) throw new Error('No invoice data found in PDF');
+            let encodedData: string | null = null;
 
-            const dataStart = markerIdx + marker.length;
-            // Capture base64 chars (strip any whitespace jsPDF may insert for line-wrapping)
-            const match = pdfText.slice(dataStart).match(/^[A-Za-z0-9+/=\s]+/);
-            if (!match) throw new Error('Could not read embedded data');
-            const encodedData = match[0].replace(/\s/g, '');
+            // Strategy 1: <meta name="invoice-data" content="..."> (browser print-to-PDF)
+            const metaMatch = pdfText.match(/name=["']invoice-data["']\s+content=["']([A-Za-z0-9+/=]+)["']/i)
+              ?? pdfText.match(/content=["']([A-Za-z0-9+/=]+)["']\s+name=["']invoice-data["']/i);
+            if (metaMatch) encodedData = metaMatch[1];
+
+            // Strategy 2: INVOICE_DATA: marker in jsPDF Subject field (legacy)
+            if (!encodedData) {
+              const marker = 'INVOICE_DATA:';
+              const markerIdx = pdfText.indexOf(marker);
+              if (markerIdx !== -1) {
+                const match = pdfText.slice(markerIdx + marker.length).match(/^[A-Za-z0-9+/=\s]+/);
+                if (match) encodedData = match[0].replace(/\s/g, '');
+              }
+            }
+
+            if (!encodedData) throw new Error('No invoice data found in PDF');
             const data = JSON.parse(decodeURIComponent(atob(encodedData)));
             loadSavedInvoice(data);
           } catch {
@@ -504,20 +532,21 @@ export function ExportToolbar() {
         className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-semibold hover:bg-indigo-700 transition-colors shadow-sm hover:shadow-md"
       >
         <Download size={15} />
-        Download PDF
+        <span className="hidden sm:inline">Download PDF</span>
       </button>
       <button
         type="button"
         onClick={handlePrint}
-        className="flex items-center gap-2 px-4 py-2.5 bg-slate-700 text-white rounded-xl text-sm font-semibold hover:bg-slate-800 transition-colors shadow-sm"
+        className="flex items-center gap-2 px-3 sm:px-4 py-2.5 bg-slate-700 text-white rounded-xl text-sm font-semibold hover:bg-slate-800 transition-colors shadow-sm"
+        title="Print"
       >
         <Printer size={15} />
-        Print
+        <span className="hidden sm:inline">Print</span>
       </button>
       <button
         type="button"
         onClick={handleSave}
-        className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-semibold hover:bg-emerald-700 transition-colors shadow-sm"
+        className="hidden sm:flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-semibold hover:bg-emerald-700 transition-colors shadow-sm"
       >
         <Save size={15} />
         Save JSON
@@ -525,7 +554,7 @@ export function ExportToolbar() {
       <button
         type="button"
         onClick={() => fileRef.current?.click()}
-        className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-colors shadow-sm"
+        className="hidden sm:flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-colors shadow-sm"
       >
         <FolderOpen size={15} />
         Load Invoice
@@ -533,7 +562,7 @@ export function ExportToolbar() {
       <button
         type="button"
         onClick={handleReset}
-        className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-500 rounded-xl text-sm font-semibold hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors shadow-sm"
+        className="hidden sm:flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-500 rounded-xl text-sm font-semibold hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors shadow-sm"
         title="Clear all data"
       >
         <RotateCcw size={15} />

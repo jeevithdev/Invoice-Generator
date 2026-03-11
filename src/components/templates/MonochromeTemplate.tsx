@@ -10,7 +10,7 @@ export function MonochromeTemplate({ invoice, tax }: TemplateProps) {
   return (
     <div
       className="bg-white w-full min-h-[1000px] p-12"
-      style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}
+      style={{ fontFamily: 'inherit' }}
     >
       {/* Top bar */}
       <div className="flex justify-between items-end pb-5 mb-8" style={{ borderBottom: '3px solid #111' }}>

@@ -24,7 +24,7 @@ export function CustomTemplate({ invoice, tax }: TemplateProps) {
   return (
     <div
       className="w-full min-h-[1000px] p-0 font-sans overflow-hidden relative"
-      style={{ backgroundColor: cfg.pageBg, fontFamily: 'Inter, sans-serif' }}
+      style={{ backgroundColor: cfg.pageBg, fontFamily: 'inherit' }}
     >
       {/* ── PDF / Image Background ── */}
       {cfg.pdfBackground && (

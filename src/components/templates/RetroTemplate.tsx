@@ -12,7 +12,7 @@ export function RetroTemplate({ invoice, tax }: TemplateProps) {
     <div
       className="w-full min-h-[1000px] p-12"
       style={{
-        fontFamily: '"Georgia", "Times New Roman", serif',
+        fontFamily: 'inherit',
         backgroundColor: '#fdf8f0',
         backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(0,0,0,0.03) 27px, rgba(0,0,0,0.03) 28px)',
       }}
@@ -36,7 +36,7 @@ export function RetroTemplate({ invoice, tax }: TemplateProps) {
                   ) : null}
                   <h1
                     className="text-2xl font-bold uppercase tracking-wider"
-                    style={{ color: accent, fontFamily: '"Georgia", serif' }}
+                    style={{ color: accent }}
                   >
                     {invoice.company.name}
                   </h1>
@@ -58,7 +58,7 @@ export function RetroTemplate({ invoice, tax }: TemplateProps) {
                   >
                     Invoice
                   </p>
-                  <p className="text-3xl font-bold tracking-wide text-gray-900" style={{ fontFamily: '"Georgia", serif' }}>
+                  <p className="text-3xl font-bold tracking-wide text-gray-900">
                     #{invoice.invoiceNumber}
                   </p>
                   <div className="mt-2 text-xs text-gray-600 space-y-0.5">
@@ -103,7 +103,7 @@ export function RetroTemplate({ invoice, tax }: TemplateProps) {
                 style={{ border: `1px dashed ${accent}80`, borderRadius: 2, backgroundColor: accent + '08' }}
               >
                 <p className="text-xs uppercase tracking-widest text-gray-500 mb-1">Total Due</p>
-                <p className="text-3xl font-bold" style={{ color: accent, fontFamily: '"Georgia", serif' }}>
+                <p className="text-3xl font-bold" style={{ color: accent }}>
                   {formatCurrency(tax.grandTotal, invoice.currency)}
                 </p>
                 <p className="text-xs text-gray-500 mt-1 italic">Including all taxes</p>

@@ -12,6 +12,7 @@ import { TemplateRenderer } from '@/components/templates/index';
 import { FileText, Settings, Calculator, Palette, LayoutTemplate, ZoomIn, ZoomOut } from 'lucide-react';
 
 type PanelTab = 'invoice' | 'items' | 'tax' | 'design' | 'template';
+type MobileView = 'editor' | 'preview';
 
 const TABS: { id: PanelTab; label: string; icon: React.ReactNode }[] = [
   { id: 'invoice', label: 'Invoice', icon: <FileText size={14} /> },
@@ -60,8 +61,16 @@ export default function InvoiceBuilder() {
   const tax = computeTax();
   const [activeTab, setActiveTab] = useState<PanelTab>('invoice');
   const [zoom, setZoom] = useState(85);
+  const [mobileView, setMobileView] = useState<MobileView>('editor');
   const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    setMounted(true);
+    // Set a sensible initial zoom based on available preview width
+    const previewWidth = window.innerWidth > 768 ? window.innerWidth - 420 : window.innerWidth;
+    const targetWidth = PAGE_WIDTH['A4'];
+    const autoZoom = Math.min(85, Math.floor((previewWidth / targetWidth) * 100 * 0.88));
+    setZoom(Math.max(40, autoZoom));
+  }, []);
 
   const c = invoice.customization;
   const pageWidth = PAGE_WIDTH[c.pageSize ?? 'A4'] ?? 794;
@@ -71,11 +80,19 @@ export default function InvoiceBuilder() {
   const previewStyleOverride = useMemo(() => {
     const parts: string[] = [];
 
-    // Font size: scale all --text-* vars by the chosen factor
+    // Font size: scale all --text-* vars (and their line-height companions) by the chosen factor
     const fsScale = c.fontSize === 'sm' ? 0.8 : c.fontSize === 'lg' ? 1.22 : null;
     if (fsScale !== null) {
+      const LINE_HEIGHTS: Record<string, number> = {
+        xs: 1 / 0.75, sm: 1.25 / 0.875, base: 1.5, lg: 1.75 / 1.125,
+        xl: 1.75 / 1.25, '2xl': 2 / 1.5, '3xl': 2.25 / 1.875,
+        '4xl': 2.5 / 2.25, '5xl': 1, '6xl': 1,
+      };
       const decls = TW_TEXT_SIZES
-        .map(([v, base]) => `--text-${v}:${(base * fsScale).toFixed(4)}rem`)
+        .flatMap(([v, base]) => [
+          `--text-${v}:${(base * fsScale).toFixed(4)}rem`,
+          `--text-${v}--line-height:${(LINE_HEIGHTS[v] ?? 1.5).toFixed(4)}`,
+        ])
         .join(';');
       parts.push(`#invoice-preview-root{${decls}}`);
     }
@@ -103,15 +120,36 @@ export default function InvoiceBuilder() {
     <div className="min-h-screen bg-slate-100 flex flex-col">
       {/* Top Navbar */}
       <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
-        <div className="max-w-screen-2xl mx-auto px-6 h-14 flex items-center justify-between gap-4">
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shrink-0">
               <FileText size={16} className="text-white" />
             </div>
             <div>
               <h1 className="text-base font-bold text-slate-900 leading-tight">InvoiceCraft</h1>
               <p className="text-xs text-slate-400 leading-tight hidden sm:block">Professional Invoice Generator</p>
             </div>
+          </div>
+          {/* Mobile view toggle */}
+          <div className="flex md:hidden items-center bg-slate-100 rounded-lg p-0.5 gap-0.5">
+            <button
+              type="button"
+              onClick={() => setMobileView('editor')}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                mobileView === 'editor' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'
+              }`}
+            >
+              Editor
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileView('preview')}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                mobileView === 'preview' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'
+              }`}
+            >
+              Preview
+            </button>
           </div>
           <div className="flex items-center gap-2">
             <PdfImportButton />
@@ -123,9 +161,9 @@ export default function InvoiceBuilder() {
       {/* Main Layout */}
       <div className="flex flex-1 max-w-screen-2xl mx-auto w-full">
         {/* Left Panel - Editor */}
-        <div className="w-[420px] min-w-[380px] bg-white border-r border-slate-200 flex flex-col h-[calc(100vh-56px)] sticky top-14">
+        <div className={`${mobileView === 'editor' ? 'flex' : 'hidden'} md:flex flex-col w-full md:w-[420px] md:min-w-[380px] bg-white border-r border-slate-200 h-[calc(100vh-56px)] sticky top-14`}>
           {/* Tabs */}
-          <div className="flex border-b border-slate-200 bg-slate-50">
+          <div className="flex border-b border-slate-200 bg-slate-50 shrink-0">
             {TABS.map((tab) => (
               <button
                 key={tab.id}
@@ -154,14 +192,15 @@ export default function InvoiceBuilder() {
         </div>
 
         {/* Right Panel - Live Preview */}
-        <div className="flex-1 flex flex-col bg-slate-200 h-[calc(100vh-56px)] overflow-hidden">
+        <div className={`${mobileView === 'preview' ? 'flex' : 'hidden'} md:flex flex-1 flex-col bg-slate-200 h-[calc(100vh-56px)] overflow-hidden`}>
           {/* Preview toolbar */}
-          <div className="flex items-center justify-between px-5 py-2.5 bg-slate-700 text-white text-xs">
+          <div className="flex items-center justify-between px-4 sm:px-5 py-2.5 bg-slate-700 text-white text-xs shrink-0">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-red-400" />
               <div className="w-3 h-3 rounded-full bg-yellow-400" />
               <div className="w-3 h-3 rounded-full bg-green-400" />
-              <span className="ml-2 text-slate-300 font-medium">Live Preview — {invoice.invoiceNumber}</span>
+              <span className="ml-2 text-slate-300 font-medium hidden sm:inline">Live Preview —</span>
+              <span className="text-slate-300 font-medium">{invoice.invoiceNumber}</span>
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -183,7 +222,7 @@ export default function InvoiceBuilder() {
           </div>
 
           {/* Scrollable preview area */}
-          <div className="flex-1 overflow-auto p-8 flex justify-center">
+          <div className="flex-1 overflow-auto p-4 sm:p-8 flex justify-center">
             {/* Scoped font-size / border-radius overrides via Tailwind CSS var injection */}
             {previewStyleOverride && <style>{previewStyleOverride}</style>}
             <div
