@@ -28,6 +28,7 @@ export function WaveTemplate({ invoice, tax }: TemplateProps) {
               <p>{invoice.company.address}</p>
               <p>{[invoice.company.city, invoice.company.state, invoice.company.zip, invoice.company.country].filter(Boolean).join(', ')}</p>
               <p>{invoice.company.email}</p>
+              {invoice.company.gstin && <p className="text-xs text-blue-700/60 mt-1">GSTIN: {invoice.company.gstin}</p>}
             </div>
             <div className="rounded-xl border border-blue-200 p-4">
               <p className="uppercase text-xs tracking-widest text-blue-600 mb-1">To</p>
@@ -35,6 +36,7 @@ export function WaveTemplate({ invoice, tax }: TemplateProps) {
               <p>{invoice.client.company}</p>
               <p>{invoice.client.address}</p>
               <p>{[invoice.client.city, invoice.client.state, invoice.client.zip, invoice.client.country].filter(Boolean).join(', ')}</p>
+              {invoice.client.gstin && <p className="text-xs text-blue-700/60 mt-1">GSTIN: {invoice.client.gstin}</p>}
             </div>
           </div>
 

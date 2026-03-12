@@ -26,6 +26,7 @@ export function LuxeTemplate({ invoice, tax }: TemplateProps) {
             <p className="text-xs uppercase tracking-widest text-amber-700 mb-1">Billed By</p>
             <p className="font-medium">{invoice.company.name}</p>
             <p className="text-sm text-neutral-600">{invoice.company.email}</p>
+            {invoice.company.gstin && <p className="text-xs text-neutral-500 mt-1">GSTIN: {invoice.company.gstin}</p>}
           </div>
           <div>
             <p className="text-xs uppercase tracking-widest text-amber-700 mb-1">Billed To</p>
@@ -34,6 +35,7 @@ export function LuxeTemplate({ invoice, tax }: TemplateProps) {
             <p className="text-sm text-neutral-600">{invoice.client.address}</p>
             <p className="text-sm text-neutral-600">{[invoice.client.city, invoice.client.state, invoice.client.zip, invoice.client.country].filter(Boolean).join(', ')}</p>
             <p className="text-sm text-neutral-600">{invoice.client.email}</p>
+            {invoice.client.gstin && <p className="text-xs text-neutral-500 mt-1">GSTIN: {invoice.client.gstin}</p>}
           </div>
         </div>
 

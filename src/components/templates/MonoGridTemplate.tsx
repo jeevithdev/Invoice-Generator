@@ -29,6 +29,7 @@ export function MonoGridTemplate({ invoice, tax }: TemplateProps) {
             <p>{invoice.company.name}</p>
             <p>{invoice.company.address}</p>
             <p>{[invoice.company.city, invoice.company.state, invoice.company.zip, invoice.company.country].filter(Boolean).join(', ')}</p>
+            {invoice.company.gstin && <p className="text-xs text-gray-400 mt-1">GSTIN: {invoice.company.gstin}</p>}
           </div>
           <div className="border border-black p-3">
             <p className="uppercase text-xs mb-1 text-gray-500">To</p>
@@ -36,6 +37,7 @@ export function MonoGridTemplate({ invoice, tax }: TemplateProps) {
             <p>{invoice.client.company}</p>
             <p>{invoice.client.address}</p>
             <p>{[invoice.client.city, invoice.client.state, invoice.client.zip, invoice.client.country].filter(Boolean).join(', ')}</p>
+            {invoice.client.gstin && <p className="text-xs text-gray-400 mt-1">GSTIN: {invoice.client.gstin}</p>}
           </div>
         </div>
 

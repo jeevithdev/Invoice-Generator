@@ -20,6 +20,7 @@ export function BoldTemplate({ invoice, tax }: TemplateProps) {
           )}
           <p className="text-white/70 text-sm">{[invoice.company.address, invoice.company.city, invoice.company.state, invoice.company.zip, invoice.company.country].filter(Boolean).join(' · ')}</p>
           <p className="text-white/70 text-sm">{invoice.company.email}</p>
+          {invoice.company.gstin && <p className="text-white/60 text-xs mt-1">GSTIN: {invoice.company.gstin}</p>}
         </div>
         <div
           className="flex flex-col justify-center items-end px-12 py-8"

@@ -26,6 +26,7 @@ export function TerminalTemplate({ invoice, tax }: TemplateProps) {
             <p>{invoice.company.name}</p>
             <p>{invoice.company.address}</p>
             <p>{[invoice.company.city, invoice.company.state, invoice.company.zip, invoice.company.country].filter(Boolean).join(', ')}</p>
+            {invoice.company.gstin && <p className="text-green-500 text-xs mt-1">GSTIN: {invoice.company.gstin}</p>}
           </div>
           <div>
             <p className="uppercase text-xs text-green-500 mb-1">Destination</p>
@@ -33,6 +34,7 @@ export function TerminalTemplate({ invoice, tax }: TemplateProps) {
             <p>{invoice.client.company}</p>
             <p>{invoice.client.address}</p>
             <p>{[invoice.client.city, invoice.client.state, invoice.client.zip, invoice.client.country].filter(Boolean).join(', ')}</p>
+            {invoice.client.gstin && <p className="text-green-500 text-xs mt-1">GSTIN: {invoice.client.gstin}</p>}
           </div>
         </div>
 

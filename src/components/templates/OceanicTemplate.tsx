@@ -29,6 +29,7 @@ export function OceanicTemplate({ invoice, tax }: TemplateProps) {
               <p className="text-sm text-cyan-900/80">{[invoice.company.city, invoice.company.state, invoice.company.zip, invoice.company.country].filter(Boolean).join(', ')}</p>
               <p className="text-sm text-cyan-900/80">{invoice.company.email}</p>
               <p className="text-sm text-cyan-900/80">{invoice.company.phone}</p>
+              {invoice.company.gstin && <p className="text-xs text-cyan-800/70 mt-1">GSTIN: {invoice.company.gstin}</p>}
             </div>
             <div className="rounded-xl p-4 border border-sky-200 bg-sky-50">
               <p className="text-xs uppercase tracking-widest text-sky-700 mb-1">Recipient</p>
@@ -37,6 +38,7 @@ export function OceanicTemplate({ invoice, tax }: TemplateProps) {
               <p className="text-sm text-sky-900/80">{invoice.client.address}</p>
               <p className="text-sm text-sky-900/80">{[invoice.client.city, invoice.client.state, invoice.client.zip, invoice.client.country].filter(Boolean).join(', ')}</p>
               <p className="text-sm text-sky-900/80">{invoice.client.email}</p>
+              {invoice.client.gstin && <p className="text-xs text-sky-800/70 mt-1">GSTIN: {invoice.client.gstin}</p>}
             </div>
           </div>
 

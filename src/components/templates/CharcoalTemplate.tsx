@@ -26,6 +26,7 @@ export function CharcoalTemplate({ invoice, tax }: TemplateProps) {
             <p>{invoice.company.name}</p>
             <p className="text-zinc-400">{invoice.company.address}</p>
             <p className="text-zinc-400">{[invoice.company.city, invoice.company.state, invoice.company.zip, invoice.company.country].filter(Boolean).join(', ')}</p>
+            {invoice.company.gstin && <p className="text-zinc-400 text-xs mt-1">GSTIN: {invoice.company.gstin}</p>}
           </div>
           <div className="rounded-xl bg-zinc-800 p-4 border border-zinc-700">
             <p className="text-zinc-400 uppercase text-xs mb-1">To</p>
@@ -33,6 +34,7 @@ export function CharcoalTemplate({ invoice, tax }: TemplateProps) {
             <p className="text-zinc-400">{invoice.client.company}</p>
             <p className="text-zinc-400">{invoice.client.address}</p>
             <p className="text-zinc-400">{[invoice.client.city, invoice.client.state, invoice.client.zip, invoice.client.country].filter(Boolean).join(', ')}</p>
+            {invoice.client.gstin && <p className="text-zinc-400 text-xs mt-1">GSTIN: {invoice.client.gstin}</p>}
           </div>
         </div>
 

@@ -26,6 +26,7 @@ export function BlueprintTemplate({ invoice, tax }: TemplateProps) {
             <p>{invoice.company.address}</p>
             <p>{[invoice.company.city, invoice.company.state, invoice.company.zip, invoice.company.country].filter(Boolean).join(', ')}</p>
             <p>{invoice.company.email}</p>
+            {invoice.company.gstin && <p className="text-xs text-gray-400 mt-1">GSTIN: {invoice.company.gstin}</p>}
           </div>
           <div>
             <p className="font-bold uppercase text-xs mb-1">Client</p>
@@ -33,6 +34,7 @@ export function BlueprintTemplate({ invoice, tax }: TemplateProps) {
             <p>{invoice.client.company}</p>
             <p>{invoice.client.address}</p>
             <p>{[invoice.client.city, invoice.client.state, invoice.client.zip, invoice.client.country].filter(Boolean).join(', ')}</p>
+            {invoice.client.gstin && <p className="text-xs text-gray-400 mt-1">GSTIN: {invoice.client.gstin}</p>}
           </div>
         </div>
 

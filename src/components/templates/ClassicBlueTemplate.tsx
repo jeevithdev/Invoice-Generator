@@ -36,6 +36,7 @@ export function ClassicBlueTemplate({ invoice, tax }: TemplateProps) {
               <p className="font-semibold text-slate-900">{invoice.company.name}</p>
               <p className="text-sm text-slate-600">{invoice.company.address}</p>
               <p className="text-sm text-slate-600">{[invoice.company.city, invoice.company.state, invoice.company.zip, invoice.company.country].filter(Boolean).join(', ')}</p>
+              {invoice.company.gstin && <p className="text-xs text-slate-500 mt-1">GSTIN: {invoice.company.gstin}</p>}
             </div>
             <div>
               <p className="text-xs font-bold uppercase tracking-wide text-blue-700 mb-1">Bill To</p>
@@ -44,6 +45,7 @@ export function ClassicBlueTemplate({ invoice, tax }: TemplateProps) {
               <p className="text-sm text-slate-600">{invoice.client.address}</p>
               <p className="text-sm text-slate-600">{[invoice.client.city, invoice.client.state, invoice.client.zip, invoice.client.country].filter(Boolean).join(', ')}</p>
               <p className="text-sm text-slate-600">{invoice.client.email}</p>
+              {invoice.client.gstin && <p className="text-xs text-slate-500 mt-1">GSTIN: {invoice.client.gstin}</p>}
             </div>
           </div>
 

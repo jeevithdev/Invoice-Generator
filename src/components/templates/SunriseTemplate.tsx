@@ -29,6 +29,7 @@ export function SunriseTemplate({ invoice, tax }: TemplateProps) {
               <p className="text-sm text-orange-900/75">{[invoice.company.city, invoice.company.state, invoice.company.zip, invoice.company.country].filter(Boolean).join(', ')}</p>
               <p className="text-sm text-orange-900/75">{invoice.company.email}</p>
               <p className="text-sm text-orange-900/75">{invoice.company.phone}</p>
+              {invoice.company.gstin && <p className="text-xs text-orange-900/60 mt-1">GSTIN: {invoice.company.gstin}</p>}
             </div>
             <div className="p-4 rounded-2xl bg-rose-50">
               <p className="text-xs uppercase tracking-widest text-rose-600 mb-1">To</p>
@@ -37,6 +38,7 @@ export function SunriseTemplate({ invoice, tax }: TemplateProps) {
               <p className="text-sm text-rose-900/75">{invoice.client.address}</p>
               <p className="text-sm text-rose-900/75">{[invoice.client.city, invoice.client.state, invoice.client.zip, invoice.client.country].filter(Boolean).join(', ')}</p>
               <p className="text-sm text-rose-900/75">{invoice.client.email}</p>
+              {invoice.client.gstin && <p className="text-xs text-rose-900/60 mt-1">GSTIN: {invoice.client.gstin}</p>}
             </div>
           </div>
 

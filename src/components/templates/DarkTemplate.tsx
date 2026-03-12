@@ -55,6 +55,7 @@ export function DarkTemplate({ invoice, tax }: TemplateProps) {
           <p className="text-sm" style={{ color: '#94a3b8' }}>{invoice.client.address}</p>
           <p className="text-sm" style={{ color: '#94a3b8' }}>{[invoice.client.city, invoice.client.state, invoice.client.zip, invoice.client.country].filter(Boolean).join(', ')}</p>
           <p className="text-sm" style={{ color: '#94a3b8' }}>{invoice.client.email}</p>
+          {invoice.client.gstin && <p className="text-xs mt-1" style={{ color: '#64748b' }}>GSTIN: {invoice.client.gstin}</p>}
         </div>
       </div>
 
