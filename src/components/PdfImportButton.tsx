@@ -69,10 +69,10 @@ export function PdfImportButton() {
         type="button"
         onClick={() => inputRef.current?.click()}
         disabled={loading}
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-all disabled:opacity-50"
+        className="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm disabled:opacity-50"
         title="Import an existing PDF invoice to pre-fill the form"
       >
-        {loading ? <Loader2 size={13} className="animate-spin" /> : <FileUp size={13} />}
+        {loading ? <Loader2 size={15} className="animate-spin" /> : <FileUp size={15} className="text-slate-500" />}
         <span className="hidden sm:inline">Import PDF</span>
       </button>
       <input

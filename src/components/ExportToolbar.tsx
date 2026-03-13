@@ -575,44 +575,45 @@ export function ExportToolbar() {
       <button
         type="button"
         onClick={handleDownloadPDF}
-        className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-semibold hover:bg-indigo-700 transition-colors shadow-sm hover:shadow-md"
+        className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors shadow-sm focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1"
       >
         <Download size={15} />
         <span className="hidden sm:inline">Download PDF</span>
       </button>
+      <div className="w-px h-6 bg-slate-200 mx-1 hidden sm:block" />
       <button
         type="button"
         onClick={handlePrint}
-        className="flex items-center gap-2 px-3 sm:px-4 py-2.5 bg-slate-700 text-white rounded-xl text-sm font-semibold hover:bg-slate-800 transition-colors shadow-sm"
+        className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors shadow-sm focus:ring-2 focus:ring-slate-200 focus:outline-none"
         title="Print"
       >
-        <Printer size={15} />
+        <Printer size={15} className="text-slate-500" />
         <span className="hidden sm:inline">Print</span>
       </button>
       <button
         type="button"
         onClick={handleSave}
-        className="hidden sm:flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-semibold hover:bg-emerald-700 transition-colors shadow-sm"
+        className="hidden md:flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors shadow-sm"
       >
-        <Save size={15} />
+        <Save size={15} className="text-slate-500" />
         Save JSON
       </button>
       <button
         type="button"
         onClick={() => fileRef.current?.click()}
-        className="hidden sm:flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-colors shadow-sm"
+        className="hidden sm:flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors shadow-sm"
       >
-        <FolderOpen size={15} />
-        Load Invoice
+        <FolderOpen size={15} className="text-slate-500" />
+        Load
       </button>
       <button
         type="button"
         onClick={handleReset}
-        className="hidden sm:flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-500 rounded-xl text-sm font-semibold hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors shadow-sm"
+        className="hidden sm:flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 text-slate-500 rounded-lg text-sm font-medium hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors shadow-sm"
         title="Clear all data"
       >
         <RotateCcw size={15} />
-        Clear
+        <span className="sr-only">Clear</span>
       </button>
       <input
         ref={fileRef}

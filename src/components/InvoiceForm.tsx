@@ -77,7 +77,7 @@ export function InvoiceForm() {
     <div className="flex flex-col gap-4">
       {/* Invoice Meta */}
       <SectionCard title="Invoice Details" icon={<FileText size={16} className="text-indigo-500" />}>
-        <div className="grid grid-cols-2 gap-3 mt-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
           <div className="flex flex-col gap-1">
             <div className="flex items-center justify-between">
               <label className="text-xs font-medium text-slate-600 uppercase tracking-wide">Invoice Number</label>
@@ -95,7 +95,7 @@ export function InvoiceForm() {
               value={invoice.invoiceNumber}
               onChange={(e) => updateInvoiceMeta({ invoiceNumber: e.target.value })}
               placeholder="INV-001"
-              className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-150"
+              className="w-full px-3 py-2.5 sm:py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-150"
             />
           </div>
           <Select
@@ -117,7 +117,7 @@ export function InvoiceForm() {
                 type="date"
                 value={invoice.dueDate}
                 onChange={(e) => updateInvoiceMeta({ dueDate: e.target.value })}
-                className="flex-1 px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-150"
+                className="flex-1 px-3 py-2.5 sm:py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-150"
               />
               {invoice.dueDate && (
                 <button
@@ -182,7 +182,7 @@ export function InvoiceForm() {
             value={invoice.company.address}
             onChange={(e) => updateCompany({ address: e.target.value })}
           />
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
               label="City"
               value={invoice.company.city}
@@ -204,7 +204,7 @@ export function InvoiceForm() {
               onChange={(e) => updateCompany({ country: e.target.value })}
             />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
               label="Phone"
               value={invoice.company.phone}
@@ -217,7 +217,7 @@ export function InvoiceForm() {
               onChange={(e) => updateCompany({ email: e.target.value })}
             />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
               label="Website"
               value={invoice.company.website}
@@ -240,7 +240,7 @@ export function InvoiceForm() {
                 value={invoice.company.gstin}
                 onChange={(e) => updateCompany({ gstin: e.target.value.toUpperCase() })}
                 placeholder="22AAAAA0000A1Z5"
-                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-150"
+                className="w-full px-3 py-2.5 sm:py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-150"
               />
             </div>
           </div>
@@ -250,7 +250,7 @@ export function InvoiceForm() {
       {/* Client Details */}
       <SectionCard title="Bill To (Client)" icon={<User size={16} className="text-indigo-500" />}>
         <div className="grid grid-cols-1 gap-3 mt-3">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
               label="Client Name"
               value={invoice.client.name}
@@ -267,7 +267,7 @@ export function InvoiceForm() {
             value={invoice.client.address}
             onChange={(e) => updateClient({ address: e.target.value })}
           />
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
               label="City"
               value={invoice.client.city}
@@ -289,7 +289,7 @@ export function InvoiceForm() {
               onChange={(e) => updateClient({ country: e.target.value })}
             />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
               label="Phone"
               value={invoice.client.phone}
@@ -319,7 +319,7 @@ export function InvoiceForm() {
               value={invoice.client.gstin}
               onChange={(e) => updateClient({ gstin: e.target.value.toUpperCase() })}
               placeholder="22AAAAA0000A1Z5"
-              className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-150"
+              className="w-full px-3 py-2.5 sm:py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-150"
             />
           </div>
         </div>

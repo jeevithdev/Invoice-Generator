@@ -16,7 +16,7 @@ export function Input({ label, error, className = '', ...props }: InputProps) {
       )}
       <input
         {...props}
-        className={`w-full px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800
+        className={`w-full px-3 py-2.5 sm:py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800
           placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent
           transition-all duration-150 ${error ? 'border-red-400 focus:ring-red-300' : ''} ${className}`}
       />
@@ -39,7 +39,7 @@ export function Textarea({ label, className = '', ...props }: TextareaProps) {
       )}
       <textarea
         {...props}
-        className={`w-full px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800
+        className={`w-full px-3 py-2.5 sm:py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800
           placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent
           transition-all duration-150 resize-none ${className}`}
       />
@@ -62,7 +62,7 @@ export function Select({ label, options, className = '', ...props }: SelectProps
       )}
       <select
         {...props}
-        className={`w-full px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800
+        className={`w-full px-3 py-2.5 sm:py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800
           focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent
           transition-all duration-150 ${className}`}
       >
@@ -85,21 +85,21 @@ interface ToggleProps {
 
 export function Toggle({ label, description, checked, onChange }: ToggleProps) {
   return (
-    <div className="flex items-center justify-between py-2">
-      <div>
+    <div className="flex items-center justify-between py-2.5 sm:py-2">
+      <div className="pr-3">
         <p className="text-sm font-medium text-slate-700">{label}</p>
-        {description && <p className="text-xs text-slate-500">{description}</p>}
+        {description && <p className="text-xs text-slate-500 mt-0.5 leading-tight">{description}</p>}
       </div>
       <button
         type="button"
         role="switch"
         aria-checked={checked}
         onClick={() => onChange(!checked)}
-        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-400
+        className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2
           ${checked ? 'bg-indigo-500' : 'bg-slate-200'}`}
       >
         <span
-          className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform duration-200
+          className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform duration-200
             ${checked ? 'translate-x-6' : 'translate-x-1'}`}
         />
       </button>
@@ -121,9 +121,9 @@ export function SectionCard({ title, icon, children, defaultOpen = true }: Secti
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-slate-50 transition-colors"
+        className="w-full flex items-center justify-between px-4 sm:px-5 py-3.5 sm:py-4 text-left hover:bg-slate-50 transition-colors"
       >
-        <div className="flex items-center gap-2 font-semibold text-slate-700">
+        <div className="flex items-center gap-2 font-semibold text-slate-700 text-sm sm:text-base">
           {icon}
           {title}
         </div>
@@ -134,7 +134,7 @@ export function SectionCard({ title, icon, children, defaultOpen = true }: Secti
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
-      {open && <div className="px-5 pb-5 pt-1 border-t border-slate-100">{children}</div>}
+      {open && <div className="px-4 sm:px-5 pb-4 sm:pb-5 pt-1 border-t border-slate-100">{children}</div>}
     </div>
   );
 }

@@ -355,3 +355,12 @@ body {
     height: calc(100dvh - 56px);
   }
 }
+
+/* Hide scrollbar utility (used on horizontally-scrollable tab bars) */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}

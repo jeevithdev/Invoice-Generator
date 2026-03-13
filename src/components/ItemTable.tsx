@@ -61,12 +61,12 @@ export function ItemTable() {
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
+            <tr className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">
               <th className="w-6 px-1 py-3"></th>
               <th className="px-2 py-3 text-left font-semibold">{cols.description}</th>
               <th className="px-2 py-3 text-right font-semibold w-16">{cols.quantity}</th>
               <th className="px-2 py-3 text-right font-semibold w-24">{cols.rate}</th>
-              <th className="px-2 py-3 text-right font-semibold w-24">{cols.amount}</th>
+              <th className="px-2 py-3 text-right font-semibold w-28">{cols.amount}</th>
               <th className="px-1 py-3 w-8"></th>
             </tr>
           </thead>
@@ -152,10 +152,10 @@ function ItemRow({ item, currency, isDragging, isOver, onUpdate, onRemove, onDra
       onDragOver={onDragOver}
       onDrop={onDrop}
       onDragEnd={onDragEnd}
-      className={`border-b border-slate-100 transition-all ${isDragging ? 'opacity-40' : ''} ${isOver ? 'bg-indigo-50' : 'hover:bg-slate-50'}`}
+      className={`group border-b border-slate-100 transition-all ${isDragging ? 'opacity-40' : ''} ${isOver ? 'bg-indigo-50 border-t-2 border-t-indigo-400' : 'hover:bg-slate-50'}`}
     >
-      <td className="px-1 py-2 cursor-grab text-slate-300 hover:text-slate-500">
-        <GripVertical size={13} />
+      <td className="px-1 py-2 cursor-grab text-slate-300 hover:text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">
+        <GripVertical size={13} className="ml-1" />
       </td>
       <td className="px-2 py-2">
         <input
@@ -163,7 +163,7 @@ function ItemRow({ item, currency, isDragging, isOver, onUpdate, onRemove, onDra
           value={item.description}
           onChange={(e) => onUpdate({ description: e.target.value })}
           placeholder="Item description..."
-          className="w-full text-sm bg-transparent border border-transparent focus:border-slate-200 focus:bg-white px-2 py-1 rounded-md outline-none transition-all"
+          className="w-full text-sm bg-transparent border border-transparent focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100 focus:bg-white px-2 py-1.5 rounded-md outline-none transition-all"
         />
       </td>
       <td className="px-2 py-2">
@@ -177,7 +177,7 @@ function ItemRow({ item, currency, isDragging, isOver, onUpdate, onRemove, onDra
             const p = parseFloat(e.target.value);
             onUpdate({ quantity: isNaN(p) ? 0 : p });
           }}
-          className="w-full text-sm text-right bg-transparent border border-transparent focus:border-slate-200 focus:bg-white px-1 py-1 rounded-md outline-none transition-all"
+          className="w-full text-sm text-right bg-transparent border border-transparent focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100 focus:bg-white px-2 py-1.5 rounded-md outline-none transition-all"
         />
       </td>
       <td className="px-2 py-2">
@@ -191,17 +191,18 @@ function ItemRow({ item, currency, isDragging, isOver, onUpdate, onRemove, onDra
             const p = parseFloat(e.target.value);
             onUpdate({ rate: isNaN(p) ? 0 : p });
           }}
-          className="w-full text-sm text-right bg-transparent border border-transparent focus:border-slate-200 focus:bg-white px-1 py-1 rounded-md outline-none transition-all"
+          className="w-full text-sm text-right bg-transparent border border-transparent focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100 focus:bg-white px-2 py-1.5 rounded-md outline-none transition-all"
         />
       </td>
       <td className="px-2 py-2 text-right font-medium text-slate-700 text-sm whitespace-nowrap">
         {formatCurrency(item.subtotal, currency)}
       </td>
-      <td className="px-1 py-2">
+      <td className="px-1 py-2 text-center">
         <button
           type="button"
           onClick={onRemove}
-          className="p-1 text-slate-300 hover:text-red-500 rounded transition-colors"
+          className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-md transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
+          title="Remove Item"
         >
           <Trash2 size={14} />
         </button>

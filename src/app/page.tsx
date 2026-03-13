@@ -63,16 +63,33 @@ export default function InvoiceBuilder() {
   const [zoom, setZoom] = useState(85);
   const [mobileView, setMobileView] = useState<MobileView>('editor');
   const [mounted, setMounted] = useState(false);
+
+  // Compute best zoom for the current viewport
+  const computeAutoZoom = () => {
+    const previewWidth = window.innerWidth > 768 ? window.innerWidth - 420 : window.innerWidth - 32;
+    const targetWidth = PAGE_WIDTH[invoice.customization?.pageSize ?? 'A4'] ?? 794;
+    return Math.max(35, Math.min(100, Math.floor((previewWidth / targetWidth) * 100 * 0.88)));
+  };
+
   useEffect(() => {
     const rafId = window.requestAnimationFrame(() => {
       setMounted(true);
-      // Set a sensible initial zoom based on available preview width
-      const previewWidth = window.innerWidth > 768 ? window.innerWidth - 420 : window.innerWidth;
-      const targetWidth = PAGE_WIDTH['A4'];
-      const autoZoom = Math.min(85, Math.floor((previewWidth / targetWidth) * 100 * 0.88));
-      setZoom(Math.max(40, autoZoom));
+      setZoom(computeAutoZoom());
     });
     return () => window.cancelAnimationFrame(rafId);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Re-calculate zoom on window resize
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    const onResize = () => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => setZoom(computeAutoZoom()), 150);
+    };
+    window.addEventListener('resize', onResize);
+    return () => { window.removeEventListener('resize', onResize); clearTimeout(timeout); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const c = invoice.customization;
@@ -120,21 +137,21 @@ export default function InvoiceBuilder() {
   }, [c.fontSize, c.borderRadius]);
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col">
+    <div className="min-h-screen min-h-[100dvh] bg-slate-100 flex flex-col">
       {/* Top Navbar */}
       <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
-        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+        <div className="max-w-screen-2xl mx-auto px-3 sm:px-6 h-14 flex items-center justify-between gap-2 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shrink-0">
               <FileText size={16} className="text-white" />
             </div>
-            <div>
+            <div className="hidden sm:block">
               <h1 className="text-base font-bold text-slate-900 leading-tight">InvoiceCraft</h1>
-              <p className="text-xs text-slate-400 leading-tight hidden sm:block">Professional Invoice Generator</p>
+              <p className="text-xs text-slate-400 leading-tight">Professional Invoice Generator</p>
             </div>
           </div>
           {/* Mobile view toggle */}
-          <div className="flex md:hidden items-center bg-slate-100 rounded-lg p-0.5 gap-0.5">
+          <div className="flex md:hidden items-center bg-slate-100 rounded-lg p-0.5 gap-0.5 shrink-0">
             <button
               type="button"
               onClick={() => setMobileView('editor')}
@@ -154,7 +171,7 @@ export default function InvoiceBuilder() {
               Preview
             </button>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto">
             <PdfImportButton />
             <ExportToolbar />
           </div>
@@ -164,18 +181,18 @@ export default function InvoiceBuilder() {
       {/* Main Layout */}
       <div className="flex flex-1 max-w-screen-2xl mx-auto w-full">
         {/* Left Panel - Editor */}
-        <div className={`${mobileView === 'editor' ? 'flex' : 'hidden'} md:flex flex-col w-full md:w-[420px] md:min-w-[380px] bg-white border-r border-slate-200 h-[calc(100vh-56px)] sticky top-14`}>
+        <div className={`${mobileView === 'editor' ? 'flex' : 'hidden'} md:flex flex-col w-full md:w-[380px] lg:w-[420px] xl:w-[460px] md:min-w-[340px] bg-white border-r border-slate-200 h-[calc(100vh-56px)] h-[calc(100dvh-56px)] sticky top-14`}>
           {/* Tabs */}
-          <div className="flex border-b border-slate-200 bg-slate-50 shrink-0">
+          <div className="flex border-b border-slate-200 bg-slate-50 shrink-0 overflow-x-auto scrollbar-none">
             {TABS.map((tab) => (
               <button
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 flex flex-col items-center gap-0.5 py-2.5 text-xs font-medium transition-all
+                className={`flex-1 min-w-[64px] flex flex-col items-center gap-0.5 py-2.5 text-xs font-medium transition-all whitespace-nowrap
                   ${activeTab === tab.id
                     ? 'text-indigo-600 border-b-2 border-indigo-500 bg-white'
-                    : 'text-slate-500 hover:text-slate-700 border-b-2 border-transparent'
+                    : 'text-slate-500 hover:text-slate-700 border-b-2 border-transparent hover:bg-slate-100'
                   }`}
               >
                 {tab.icon}
@@ -185,7 +202,7 @@ export default function InvoiceBuilder() {
           </div>
 
           {/* Panel content */}
-          <div className="flex-1 overflow-y-auto p-4">
+          <div className="flex-1 overflow-y-auto p-3 sm:p-4">
             {activeTab === 'invoice' && <InvoiceForm />}
             {activeTab === 'items' && <ItemTable />}
             {activeTab === 'tax' && <TaxCalculator />}
@@ -195,7 +212,7 @@ export default function InvoiceBuilder() {
         </div>
 
         {/* Right Panel - Live Preview */}
-        <div className={`${mobileView === 'preview' ? 'flex' : 'hidden'} md:flex flex-1 flex-col bg-slate-200 h-[calc(100vh-56px)] overflow-hidden`}>
+        <div className={`${mobileView === 'preview' ? 'flex' : 'hidden'} md:flex flex-1 flex-col bg-slate-200 h-[calc(100vh-56px)] h-[calc(100dvh-56px)] overflow-hidden`}>
           {/* Preview toolbar */}
           <div className="flex items-center justify-between px-4 sm:px-5 py-2.5 bg-slate-700 text-white text-xs shrink-0">
             <div className="flex items-center gap-2">
@@ -225,24 +242,26 @@ export default function InvoiceBuilder() {
           </div>
 
           {/* Scrollable preview area */}
-          <div className="flex-1 overflow-auto p-4 sm:p-8 flex justify-center">
+          <div className="flex-1 overflow-auto p-2 sm:p-6 md:p-8 lg:p-12 flex justify-center items-start">
             {/* Scoped font-size / border-radius overrides via Tailwind CSS var injection */}
             {previewStyleOverride && <style>{previewStyleOverride}</style>}
             <div
+              className="origin-top flex justify-center"
               style={{
                 transform: `scale(${zoom / 100})`,
-                transformOrigin: 'top center',
                 width: pageWidth,
                 minWidth: pageWidth,
-                marginBottom: zoom < 100 ? `-${(100 - zoom) * 6}px` : undefined,
+                marginBottom: zoom < 100 ? `-${(100 - zoom) * 8}px` : undefined,
               }}
             >
               <div
                 id="invoice-preview-root"
+                className="bg-white"
                 style={{
                   width: pageWidth,
-                  boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
-                  outline: '1px solid rgba(0,0,0,0.08)',
+                  minHeight: `${pageWidth * 1.414}px`, // Approximate A4 aspect ratio min-height
+                  boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 25px 50px -12px rgba(0,0,0,0.25)',
+                  outline: '1px solid rgba(0,0,0,0.05)',
                   fontFamily,
                   position: 'relative',
                   overflow: 'hidden',
