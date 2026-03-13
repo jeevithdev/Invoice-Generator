@@ -1,4 +1,4 @@
-import { TemplateProps, ItemsTableBody, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection } from './TemplateShared';
+import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection, fmtDate } from './TemplateShared';
 import { formatCurrency } from '@/utils/format';
 import { CustomTemplateConfig } from '@/types/invoice';
 
@@ -10,16 +10,8 @@ export function CustomTemplate({ invoice, tax }: TemplateProps) {
   const cols = invoice.customization.columnNames;
   const accent = cfg.accentColor;
 
-  const tableRowClass = (i: number) => {
-    if (cfg.tableBordered) return 'border border-gray-200';
-    if (cfg.tableRowStriped) return i % 2 === 0 ? 'bg-white' : '';
-    return 'border-b border-gray-100';
-  };
-
   const stripedBg = (i: number) =>
     cfg.tableRowStriped ? (i % 2 !== 0 ? cfg.tableHeaderBg + '55' : 'transparent') : 'transparent';
-
-  const radiusClass = 'rounded-xl';
 
   return (
     <div
@@ -65,8 +57,8 @@ export function CustomTemplate({ invoice, tax }: TemplateProps) {
           )}
           <div className="mt-4 flex gap-6 text-sm opacity-90">
             <span><span className="font-semibold">#{invoice.invoiceNumber}</span></span>
-            <span>Date: {invoice.invoiceDate}</span>
-            {invoice.dueDate && <span>Due: {invoice.dueDate}</span>}
+            <span>Date: {fmtDate(invoice, invoice.invoiceDate)}</span>
+            {invoice.dueDate && <span>Due: {fmtDate(invoice, invoice.dueDate)}</span>}
           </div>
         </div>
       ) : cfg.headerLayout === 'reversed' ? (
@@ -81,8 +73,8 @@ export function CustomTemplate({ invoice, tax }: TemplateProps) {
             </h2>
             <div className="mt-3 text-sm opacity-90 space-y-1">
               <p><span className="font-semibold">#{invoice.invoiceNumber}</span></p>
-              <p>Date: {invoice.invoiceDate}</p>
-              {invoice.dueDate && <p>Due: {invoice.dueDate}</p>}
+              <p>Date: {fmtDate(invoice, invoice.invoiceDate)}</p>
+              {invoice.dueDate && <p>Due: {fmtDate(invoice, invoice.dueDate)}</p>}
             </div>
           </div>
           {/* Company on the right */}
@@ -133,8 +125,8 @@ export function CustomTemplate({ invoice, tax }: TemplateProps) {
             </h2>
             <div className="mt-3 text-sm opacity-90 space-y-1">
               <p><span className="font-semibold">#{invoice.invoiceNumber}</span></p>
-              <p>Date: {invoice.invoiceDate}</p>
-              {invoice.dueDate && <p>Due: {invoice.dueDate}</p>}
+              <p>Date: {fmtDate(invoice, invoice.invoiceDate)}</p>
+              {invoice.dueDate && <p>Due: {fmtDate(invoice, invoice.dueDate)}</p>}
             </div>
           </div>
         </div>

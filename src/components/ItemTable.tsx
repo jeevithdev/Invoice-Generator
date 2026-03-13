@@ -2,7 +2,7 @@
 import { useInvoiceStore } from '@/store/invoiceStore';
 import { formatCurrency } from '@/utils/format';
 import { Plus, Trash2, GripVertical } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { InvoiceItem } from '@/types/invoice';
 
 export function ItemTable() {
@@ -75,7 +75,6 @@ export function ItemTable() {
               <ItemRow
                 key={item.id}
                 item={item}
-                idx={idx}
                 currency={currency}
                 isDragging={dragIdx === idx}
                 isOver={overIdx === idx}
@@ -115,7 +114,6 @@ export function ItemTable() {
 
 interface ItemRowProps {
   item: InvoiceItem;
-  idx: number;
   currency: string;
   isDragging: boolean;
   isOver: boolean;
@@ -127,7 +125,26 @@ interface ItemRowProps {
   onDragEnd: () => void;
 }
 
-function ItemRow({ item, idx, currency, isDragging, isOver, onUpdate, onRemove, onDragStart, onDragOver, onDrop, onDragEnd }: ItemRowProps) {
+function ItemRow({ item, currency, isDragging, isOver, onUpdate, onRemove, onDragStart, onDragOver, onDrop, onDragEnd }: ItemRowProps) {
+  const [qtyStr, setQtyStr] = useState(item.quantity.toString());
+  const [rateStr, setRateStr] = useState(item.rate.toString());
+
+  useEffect(() => {
+    const val = parseFloat(qtyStr);
+    const num = isNaN(val) ? 0 : val;
+    if (num !== item.quantity) {
+      setQtyStr(item.quantity.toString());
+    }
+  }, [item.quantity, qtyStr]);
+
+  useEffect(() => {
+    const val = parseFloat(rateStr);
+    const num = isNaN(val) ? 0 : val;
+    if (num !== item.rate) {
+      setRateStr(item.rate.toString());
+    }
+  }, [item.rate, rateStr]);
+
   return (
     <tr
       draggable
@@ -153,8 +170,13 @@ function ItemRow({ item, idx, currency, isDragging, isOver, onUpdate, onRemove, 
         <input
           type="number"
           min={0}
-          value={item.quantity}
-          onChange={(e) => onUpdate({ quantity: parseFloat(e.target.value) || 0 })}
+          step="any"
+          value={qtyStr}
+          onChange={(e) => {
+            setQtyStr(e.target.value);
+            const p = parseFloat(e.target.value);
+            onUpdate({ quantity: isNaN(p) ? 0 : p });
+          }}
           className="w-full text-sm text-right bg-transparent border border-transparent focus:border-slate-200 focus:bg-white px-1 py-1 rounded-md outline-none transition-all"
         />
       </td>
@@ -162,8 +184,13 @@ function ItemRow({ item, idx, currency, isDragging, isOver, onUpdate, onRemove, 
         <input
           type="number"
           min={0}
-          value={item.rate}
-          onChange={(e) => onUpdate({ rate: parseFloat(e.target.value) || 0 })}
+          step="any"
+          value={rateStr}
+          onChange={(e) => {
+            setRateStr(e.target.value);
+            const p = parseFloat(e.target.value);
+            onUpdate({ rate: isNaN(p) ? 0 : p });
+          }}
           className="w-full text-sm text-right bg-transparent border border-transparent focus:border-slate-200 focus:bg-white px-1 py-1 rounded-md outline-none transition-all"
         />
       </td>

@@ -21,6 +21,7 @@ export function TemplateSelector() {
               type="button"
               onClick={() => {
                 if (t.id === 'custom') {
+                  setTemplate('custom');
                   setShowBuilder((v) => !v);
                 } else {
                   setTemplate(t.id as TemplateId);

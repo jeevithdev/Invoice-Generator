@@ -79,6 +79,10 @@ export function CustomTemplateBuilder({ onClose }: Props) {
           update({ pdfBackground: ev.target?.result as string });
           setPdfLoading(false);
         };
+        reader.onerror = () => {
+          setPdfError('Failed to read file. Please try again.');
+          setPdfLoading(false);
+        };
         reader.readAsDataURL(file);
       } else if (file.type === 'application/pdf') {
         // PDF → render page 1 to canvas → dataURL

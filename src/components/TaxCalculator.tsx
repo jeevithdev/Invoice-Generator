@@ -3,6 +3,7 @@ import { useInvoiceStore } from '@/store/invoiceStore';
 import { Input, Select, Toggle, SectionCard } from '@/components/ui/FormControls';
 import { formatCurrency } from '@/utils/format';
 import { Calculator, Landmark } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 const GST_RATES = [
   { value: '0', label: '0% (Exempt)' },
@@ -16,6 +17,16 @@ export function TaxCalculator() {
   const { invoice, updateTaxConfig, computeTax } = useInvoiceStore();
   const { taxConfig, currency } = invoice;
   const tax = computeTax();
+
+  const [discountStr, setDiscountStr] = useState(taxConfig.discountValue.toString());
+
+  useEffect(() => {
+    const val = parseFloat(discountStr);
+    const num = isNaN(val) ? 0 : val;
+    if (num !== taxConfig.discountValue) {
+      setDiscountStr(taxConfig.discountValue.toString());
+    }
+  }, [taxConfig.discountValue, discountStr]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -65,9 +76,20 @@ export function TaxCalculator() {
                 label={taxConfig.discountType === 'percentage' ? 'Discount %' : 'Discount Amount'}
                 type="number"
                 min={0}
+                step="any"
                 max={taxConfig.discountType === 'percentage' ? 100 : undefined}
-                value={taxConfig.discountValue}
-                onChange={(e) => updateTaxConfig({ discountValue: parseFloat(e.target.value) || 0 })}
+                value={discountStr}
+                onChange={(e) => {
+                  setDiscountStr(e.target.value);
+                  const raw = parseFloat(e.target.value);
+                  let value = isNaN(raw) ? 0 : raw;
+                  if (taxConfig.discountType === 'percentage') {
+                    value = Math.min(100, Math.max(0, value));
+                  } else {
+                    value = Math.max(0, value);
+                  }
+                  updateTaxConfig({ discountValue: value });
+                }}
               />
             </div>
           )}

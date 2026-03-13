@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 // Simple unique id generator
-const genId = () => Math.random().toString(36).substr(2, 9);
+const genId = () => Math.random().toString(36).substring(2, 11);
 
 interface InvoiceStore {
   invoice: InvoiceData;
@@ -170,7 +170,9 @@ export const useInvoiceStore = create<InvoiceStore>()(
             items: state.invoice.items.map((item) => {
               if (item.id !== id) return item;
               const updated = { ...item, ...data };
-              updated.subtotal = updated.quantity * updated.rate;
+              if (updated.quantity < 0) updated.quantity = 0;
+              if (updated.rate < 0) updated.rate = 0;
+              updated.subtotal = Math.round((updated.quantity * updated.rate + Number.EPSILON) * 100) / 100;
               return updated;
             }),
           },
@@ -188,9 +190,14 @@ export const useInvoiceStore = create<InvoiceStore>()(
         set((state) => ({ invoice: { ...state.invoice, items } })),
 
       updateTaxConfig: (data) =>
-        set((state) => ({
-          invoice: { ...state.invoice, taxConfig: { ...state.invoice.taxConfig, ...data } },
-        })),
+        set((state) => {
+          const newTaxConfig = { ...state.invoice.taxConfig, ...data };
+          if (newTaxConfig.discountValue < 0) newTaxConfig.discountValue = 0;
+          if (newTaxConfig.gstRate < 0) newTaxConfig.gstRate = 0;
+          return {
+            invoice: { ...state.invoice, taxConfig: newTaxConfig },
+          };
+        }),
 
       updateBankDetails: (data) =>
         set((state) => ({
@@ -219,28 +226,31 @@ export const useInvoiceStore = create<InvoiceStore>()(
       computeTax: () => {
         const { invoice } = get();
         const { items, taxConfig } = invoice;
-        const subtotal = items.reduce((sum, item) => sum + item.subtotal, 0);
+        const round2 = (num: number) => Math.round((num + Number.EPSILON) * 100) / 100;
+
+        const subtotal = round2(items.reduce((sum, item) => sum + item.subtotal, 0));
         let discountAmount = 0;
         if (taxConfig.enableDiscount) {
-          discountAmount =
+          const requestedDiscount =
             taxConfig.discountType === 'percentage'
               ? (subtotal * taxConfig.discountValue) / 100
               : taxConfig.discountValue;
+          discountAmount = round2(Math.min(Math.max(0, requestedDiscount), subtotal));
         }
-        const taxableAmount = subtotal - discountAmount;
+        const taxableAmount = round2(Math.max(0, subtotal - discountAmount));
         let cgst = 0;
         let sgst = 0;
         let igst = 0;
         if (taxConfig.enableGST) {
           if (taxConfig.isIGST) {
-            igst = (taxableAmount * taxConfig.gstRate) / 100;
+            igst = round2((taxableAmount * taxConfig.gstRate) / 100);
           } else {
-            cgst = (taxableAmount * (taxConfig.gstRate / 2)) / 100;
-            sgst = (taxableAmount * (taxConfig.gstRate / 2)) / 100;
+            cgst = round2((taxableAmount * (taxConfig.gstRate / 2)) / 100);
+            sgst = round2((taxableAmount * (taxConfig.gstRate / 2)) / 100);
           }
         }
-        const totalTax = cgst + sgst + igst;
-        const grandTotal = taxableAmount + totalTax;
+        const totalTax = round2(cgst + sgst + igst);
+        const grandTotal = round2(taxableAmount + totalTax);
         return { subtotal, discountAmount, taxableAmount, cgst, sgst, igst, totalTax, grandTotal };
       },
 

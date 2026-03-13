@@ -19,12 +19,17 @@ function normaliseDate(raw: string): string {
   const s = raw.trim();
   // Already ISO
   if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
-  // DD/MM/YYYY or DD-MM-YYYY
-  const dmy = s.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})$/);
-  if (dmy) return `${dmy[3]}-${dmy[2].padStart(2,'0')}-${dmy[1].padStart(2,'0')}`;
-  // MM/DD/YYYY (common in US invoices)
-  const mdy = s.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})$/);
-  if (mdy) return `${mdy[3]}-${mdy[1].padStart(2,'0')}-${mdy[2].padStart(2,'0')}`;
+  // DD/MM/YYYY, MM/DD/YYYY, DD-MM-YYYY, etc.
+  // Prefer DMY for ambiguous inputs (<=12 on both sides) to preserve existing behavior.
+  const slashDate = s.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})$/);
+  if (slashDate) {
+    const a = parseInt(slashDate[1], 10);
+    const b = parseInt(slashDate[2], 10);
+    const y = slashDate[3];
+    const day = a > 12 ? a : b > 12 ? b : a;
+    const month = a > 12 ? b : b > 12 ? a : b;
+    return `${y}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+  }
   // "10 March 2026" or "March 10, 2026"
   const months: Record<string,string> = {
     january:'01',february:'02',march:'03',april:'04',may:'05',june:'06',
@@ -96,7 +101,7 @@ export async function parsePdfInvoice(file: File): Promise<ParsedInvoiceResult> 
     const vp = page.getViewport({ scale: 1 });
     for (const item of content.items) {
       if ('str' in item && item.str.trim()) {
-        const tx = (item as any).transform;
+        const tx = 'transform' in item && Array.isArray(item.transform) ? item.transform : undefined;
         allItems.push({
           str: item.str,
           x: tx ? tx[4] : 0,
@@ -209,34 +214,93 @@ export async function parsePdfInvoice(file: File): Promise<ParsedInvoiceResult> 
 
   // ── 4. Line items ──────────────────────────────────────────────────────────
   // A line item row typically contains: text + 2-3 numbers (qty, rate, amount)
-  const AMT = /[₹$€£]?\s*[\d,]+(?:\.\d{1,2})?/;
-  const ITEM_RE = new RegExp(
-    `^(.+?)\\s+(\\d+(?:\\.\\d+)?)\\s+${AMT.source}\\s*${AMT.source}$`
-  );
   const items: InvoiceItem[] = [];
-  const genId = () => Math.random().toString(36).substr(2, 9);
+  const genId = () => Math.random().toString(36).substring(2, 11);
+
+  let lastItem: InvoiceItem | null = null;
 
   for (const line of lines) {
     // Skip header rows and total rows
-    if (/description|item|particulars|qty|quantity|rate|amount|subtotal|total|cgst|sgst|igst|discount/i.test(line)) continue;
+    if (/description|item|particulars|qty|quantity|rate|amount|subtotal|total|cgst|sgst|igst|discount/i.test(line)) {
+      lastItem = null;
+      continue;
+    }
 
-    // Try to parse 3-4 numbers at end of line (description qty rate amount)
-    const nums = line.match(/([₹$€£]?\s*[\d,]+(?:\.\d{1,2})?)/g);
+    // Match numbers more robustly (e.g. 1,000.50 or 50 or 1.25)
+    const nums = line.match(/([₹$€£]?\s*(?:\d{1,3}(?:,\d{3})*|\d+)(?:\.\d+)?)/g);
+
     if (nums && nums.length >= 2) {
       const amountRaw = nums[nums.length - 1];
       const rateRaw   = nums[nums.length - 2];
       const qtyRaw    = nums.length >= 3 ? nums[nums.length - 3] : '1';
+
       const amount  = parseAmount(amountRaw);
       const rate    = parseAmount(rateRaw);
-      const qty     = parseFloat(qtyRaw.replace(/[,\s]/g,'')) || 1;
+      const qty     = parseFloat(qtyRaw.replace(/[^\d.]/g,'')) || 1;
 
-      // Heuristic: amount ≈ qty * rate (within 1%)
+      // Heuristic: amount ≈ qty * rate (within 2%)
       if (amount > 0 && rate > 0 && Math.abs(qty * rate - amount) / amount < 0.02) {
         // description = everything before the first number
         const firstNumIdx = line.search(/[₹$€£]?\s*\d/);
-        const desc = firstNumIdx > 0 ? line.slice(0, firstNumIdx).trim() : line;
-        if (desc.length > 1 && desc.length < 120) {
-          items.push({ id: genId(), description: desc, quantity: qty, rate, subtotal: amount });
+        let desc = firstNumIdx > 0 ? line.slice(0, firstNumIdx).trim() : line.trim();
+        // Remove trailing non-word chars
+        desc = desc.replace(/[^\w\s\)\]\}]+$/, '').trim();
+
+        if (desc.length > 1 && desc.length < 150 && !/^\d+$/.test(desc)) {
+          const newItem = { id: genId(), description: desc, quantity: qty, rate, subtotal: amount };
+          items.push(newItem);
+          lastItem = newItem;
+          continue;
+        }
+      }
+    }
+
+    // If no numbers but we had a lastItem, this might be a multiline description
+    if (lastItem && !nums && line.trim().length > 0 && line.length < 100) {
+      if (!/bank|account|ifsc|terms|notes|gst|tax/i.test(line)) {
+        lastItem.description += ' ' + line.trim();
+        continue;
+      }
+    }
+    lastItem = null;
+  }
+
+  // ── 4b. Tax and Discount Extraction ─────────────────────────────────────────
+  let enableGST = false;
+  let gstRate = 18;
+  let isIGST = false;
+  let enableDiscount = false;
+  let discountValue = 0;
+  let discountType: "percentage" | "fixed" = "fixed";
+
+  for (const line of lines) {
+    const low = line.toLowerCase();
+    
+    // Extract GST
+    if (low.includes('cgst') || low.includes('sgst') || low.includes('igst') || low.includes('gst')) {
+      enableGST = true;
+      if (low.includes('igst')) isIGST = true;
+      
+      const rateMatch = line.match(/(\d+(?:\.\d+)?)\s*%/);
+      if (rateMatch) {
+         let r = parseFloat(rateMatch[1]);
+         if (low.includes('cgst') || low.includes('sgst')) r *= 2; 
+         if (r > 0 && r <= 100) gstRate = r;
+      }
+    }
+
+    // Extract Discount
+    if (low.includes('discount')) {
+      enableDiscount = true;
+      const pctMatch = line.match(/(\d+(?:\.\d+)?)\s*%/);
+      if (pctMatch) {
+        discountType = 'percentage';
+        discountValue = parseFloat(pctMatch[1]);
+      } else {
+        const valMatch = line.match(/[\d,]+(?:\.\d{1,2})?/g);
+        if (valMatch && valMatch.length > 0) {
+           discountType = 'fixed';
+           discountValue = parseAmount(valMatch[valMatch.length - 1]);
         }
       }
     }
@@ -276,7 +340,6 @@ export async function parsePdfInvoice(file: File): Promise<ParsedInvoiceResult> 
     }
   }
 
-  // ── 7. Assemble partial InvoiceData ───────────────────────────────────────
   const partial: Partial<InvoiceData> = {
     invoiceNumber: invoiceNumber || undefined,
     invoiceDate,
@@ -317,6 +380,16 @@ export async function parsePdfInvoice(file: File): Promise<ParsedInvoiceResult> 
       ifscCode,
       branchName,
     },
+    ...((enableGST || enableDiscount) ? {
+      taxConfig: {
+        enableGST,
+        gstRate,
+        isIGST,
+        enableDiscount,
+        discountType,
+        discountValue,
+      }
+    } : {})
   };
 
   return { partial, rawText, warnings };

@@ -4,6 +4,7 @@ import { Input, Textarea, Select, SectionCard } from '@/components/ui/FormContro
 import { Building2, User, FileText, UploadCloud, X, Shuffle } from 'lucide-react';
 import { useRef } from 'react';
 import { generateRandomGSTIN } from '@/utils/gstin';
+import toast from 'react-hot-toast';
 
 function generateInvoiceNumber(): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -30,14 +31,46 @@ export function InvoiceForm() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 2 * 1024 * 1024) {
-      alert('Logo must be under 2MB');
+      toast.error('Logo must be under 2MB');
       return;
     }
     const reader = new FileReader();
     reader.onload = (ev) => {
-      updateCompany({ logo: ev.target?.result as string });
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 300;
+        const MAX_HEIGHT = 300;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL('image/png');
+          updateCompany({ logo: dataUrl });
+        }
+      };
+      if (typeof ev.target?.result === 'string') {
+        img.src = ev.target.result;
+      }
     };
     reader.readAsDataURL(file);
+    e.target.value = ''; // Reset input so same file can be selected again
   }
 
   return (

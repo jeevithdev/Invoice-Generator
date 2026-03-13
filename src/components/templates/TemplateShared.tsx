@@ -18,7 +18,6 @@ export function invoiceTitle(invoice: InvoiceData): string {
 
 // Shared sub-components used across templates
 export function ItemsTableBody({ invoice }: { invoice: InvoiceData }) {
-  const cols = invoice.customization.columnNames;
   return (
     <>
       {invoice.items.map((item, i) => (

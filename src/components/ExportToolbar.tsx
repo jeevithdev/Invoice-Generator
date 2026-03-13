@@ -2,6 +2,7 @@
 import { useRef, useCallback } from 'react';
 import { useInvoiceStore } from '@/store/invoiceStore';
 import { Download, Printer, Save, FolderOpen, RotateCcw } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 // ─── Color conversion helpers ────────────────────────────────────────────────
 // html2canvas (used by html2pdf.js) cannot parse CSS Color Level 4 functions:
@@ -360,6 +361,8 @@ async function fixClonedDoc(clonedDoc: Document): Promise<void> {
   clonedDoc.head.appendChild(fix);
 }
 
+void fixClonedDoc;
+
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export function ExportToolbar() {
@@ -368,23 +371,31 @@ export function ExportToolbar() {
   const handleDownloadPDF = useCallback(() => {
     const el = document.getElementById('invoice-preview-root');
     if (!el) return;
+    
     const printWindow = window.open('', '_blank');
-    if (!printWindow) return;
+    if (!printWindow) {
+      toast.error('Please allow popups to download PDF');
+      return;
+    }
+    printWindow.document.write('<html><body><h2>Generating PDF...</h2></body></html>');
 
-    const pageSize = invoice.customization?.pageSize ?? 'A4';
-    const pageCss = pageSize === 'Letter'
-      ? '@page { size: letter; margin: 0; }'
-      : '@page { size: A4; margin: 0; }';
+    // Process asynchronously so large stringification doesn't block closing the popup logic
+    setTimeout(() => {
+      const pageSize = invoice.customization?.pageSize ?? 'A4';
+      const pageCss = pageSize === 'Letter'
+        ? '@page { size: letter; margin: 0; }'
+        : '@page { size: A4; margin: 0; }';
 
-    // Encode invoice data as a meta tag for roundtrip loading
-    const encodedData = btoa(encodeURIComponent(JSON.stringify(invoice)));
+      // Encode invoice data as a meta tag for roundtrip loading
+      const encodedData = btoa(encodeURIComponent(JSON.stringify(invoice)));
 
-    // Copy all stylesheets from current page so Tailwind CSS is fully available
-    const styleNodes = Array.from(
-      document.querySelectorAll<HTMLLinkElement | HTMLStyleElement>('link[rel="stylesheet"], style')
-    ).map(n => n.outerHTML).join('\n');
+      // Copy all stylesheets from current page so Tailwind CSS is fully available
+      const styleNodes = Array.from(
+        document.querySelectorAll<HTMLLinkElement | HTMLStyleElement>('link[rel="stylesheet"], style')
+      ).map(n => n.outerHTML).join('\n');
 
-    printWindow.document.write(`<!DOCTYPE html>
+      printWindow.document.open();
+      printWindow.document.write(`<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
@@ -402,46 +413,61 @@ export function ExportToolbar() {
   </head>
   <body>${el.outerHTML}</body>
 </html>`);
-    printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => {
-      printWindow.print();
-    }, 800);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.onafterprint = () => {
+        printWindow.close();
+      };
+      setTimeout(() => {
+        printWindow.print();
+      }, 500);
+    }, 50);
   }, [invoice]);
 
   const handlePrint = useCallback(() => {
     const el = document.getElementById('invoice-preview-root');
     if (!el) return;
+    
     const printWindow = window.open('', '_blank');
-    if (!printWindow) return;
-    // Copy ALL stylesheets (link + style) from current page so Tailwind CSS is available
-    const styleNodes = Array.from(
-      document.querySelectorAll<HTMLLinkElement | HTMLStyleElement>('link[rel="stylesheet"], style')
-    ).map(n => n.outerHTML).join('\n');
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <title>Invoice ${invoice.invoiceNumber}</title>
-          ${styleNodes}
-          <style>
-            body { margin: 0; }
-            @media print {
-              body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            }
-          </style>
-        </head>
-        <body>${el.outerHTML}</body>
-      </html>
-    `);
-    printWindow.document.close();
-    printWindow.focus();
+    if (!printWindow) {
+      toast.error('Please allow popups to print');
+      return;
+    }
+    printWindow.document.write('<html><body><h2>Preparing to print...</h2></body></html>');
+    
     setTimeout(() => {
-      printWindow.print();
-      printWindow.close();
-    }, 800);
-  }, [invoice.invoiceNumber]);
+      // Copy ALL stylesheets (link + style) from current page so Tailwind CSS is available
+      const styleNodes = Array.from(
+        document.querySelectorAll<HTMLLinkElement | HTMLStyleElement>('link[rel="stylesheet"], style')
+      ).map(n => n.outerHTML).join('\n');
+      printWindow.document.open();
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <title>Invoice ${invoice.invoiceNumber}</title>
+            ${styleNodes}
+            <style>
+              body { margin: 0; }
+              @media print {
+                body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+              }
+            </style>
+          </head>
+          <body>${el.outerHTML}</body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.onafterprint = () => {
+        printWindow.close();
+      };
+      setTimeout(() => {
+        printWindow.print();
+      }, 500);
+    }, 50);
+  }, [invoice]);
 
   const handleSave = useCallback(() => {
     const json = JSON.stringify(invoice, null, 2);
@@ -496,7 +522,7 @@ export function ExportToolbar() {
             const data = JSON.parse(decodeURIComponent(atob(encodedData)));
             loadSavedInvoice(data);
           } catch {
-            alert('No invoice data found in this PDF.\nOnly PDFs downloaded from this app can be loaded.');
+            toast.error('No invoice data found in this PDF.\nOnly PDFs downloaded from this app can be loaded.');
           }
         };
         reader.readAsArrayBuffer(file);
@@ -507,7 +533,7 @@ export function ExportToolbar() {
             const data = JSON.parse(ev.target?.result as string);
             loadSavedInvoice(data);
           } catch {
-            alert('Invalid invoice file');
+            toast.error('Invalid invoice file');
           }
         };
         reader.readAsText(file);
@@ -519,9 +545,29 @@ export function ExportToolbar() {
   );
 
   const handleReset = useCallback(() => {
-    if (confirm('Reset to default invoice? All changes will be lost.')) {
-      resetInvoice();
-    }
+    toast((t) => (
+      <div>
+        <p className="text-sm font-medium mb-2 text-slate-800">Reset to default invoice?</p>
+        <p className="text-xs text-slate-500 mb-3">All changes will be lost.</p>
+        <div className="flex gap-2">
+          <button
+            onClick={() => {
+              resetInvoice();
+              toast.dismiss(t.id);
+            }}
+            className="px-3 py-1.5 bg-red-600 text-white rounded-md text-xs font-semibold hover:bg-red-700 w-full"
+          >
+            Reset
+          </button>
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-md text-xs font-semibold hover:bg-slate-200 w-full"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    ), { duration: 5000 });
   }, [resetInvoice]);
 
   return (

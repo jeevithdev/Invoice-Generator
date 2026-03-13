@@ -1,4 +1,4 @@
-import { TemplateProps, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection , fmtDate } from './TemplateShared';
+import { TemplateProps, fmtDate } from './TemplateShared';
 import { formatCurrency } from '@/utils/format';
 
 // ─────────────────────────────────────────────

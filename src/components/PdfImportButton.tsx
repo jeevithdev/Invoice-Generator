@@ -23,7 +23,7 @@ export function PdfImportButton() {
     try {
       const parsed = await parsePdfInvoice(file);
       setResult(parsed);
-    } catch (err) {
+    } catch {
       setError('Failed to read PDF. Make sure it is a text-based (not scanned) PDF.');
     } finally {
       setLoading(false);
@@ -44,6 +44,7 @@ export function PdfImportButton() {
       company: { ...invoice.company, ...result.partial.company },
       client: { ...invoice.client, ...result.partial.client },
       items: result.partial.items?.length ? result.partial.items : invoice.items,
+      ...(result.partial.taxConfig ? { taxConfig: { ...invoice.taxConfig, ...result.partial.taxConfig } } : {}),
       bankDetails: {
         ...invoice.bankDetails,
         ...(result.partial.bankDetails?.bankName ? result.partial.bankDetails : {}),
@@ -161,7 +162,7 @@ export function PdfImportButton() {
                     Line Items ({result.partial.items.length})
                   </p>
                   <div className="space-y-1.5">
-                    {result.partial.items.map((item, i) => (
+                    {result.partial.items.map((item) => (
                       <div key={item.id} className="flex justify-between text-xs bg-slate-50 rounded-xl px-3 py-2">
                         <span className="text-slate-700 flex-1 truncate">{item.description}</span>
                         <span className="text-slate-500 ml-2 shrink-0">

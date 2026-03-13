@@ -64,12 +64,15 @@ export default function InvoiceBuilder() {
   const [mobileView, setMobileView] = useState<MobileView>('editor');
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
-    setMounted(true);
-    // Set a sensible initial zoom based on available preview width
-    const previewWidth = window.innerWidth > 768 ? window.innerWidth - 420 : window.innerWidth;
-    const targetWidth = PAGE_WIDTH['A4'];
-    const autoZoom = Math.min(85, Math.floor((previewWidth / targetWidth) * 100 * 0.88));
-    setZoom(Math.max(40, autoZoom));
+    const rafId = window.requestAnimationFrame(() => {
+      setMounted(true);
+      // Set a sensible initial zoom based on available preview width
+      const previewWidth = window.innerWidth > 768 ? window.innerWidth - 420 : window.innerWidth;
+      const targetWidth = PAGE_WIDTH['A4'];
+      const autoZoom = Math.min(85, Math.floor((previewWidth / targetWidth) * 100 * 0.88));
+      setZoom(Math.max(40, autoZoom));
+    });
+    return () => window.cancelAnimationFrame(rafId);
   }, []);
 
   const c = invoice.customization;

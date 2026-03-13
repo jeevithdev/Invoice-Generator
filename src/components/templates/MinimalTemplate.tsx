@@ -1,5 +1,4 @@
 import { TemplateProps, ItemsTableBody, TotalsSection, AmountInWords, BankDetailsSection, NotesSection, TermsSection, fmtDate, invoiceTitle } from './TemplateShared';
-import { formatCurrency } from '@/utils/format';
 
 // ─────────────────────────────────────────────
 // TEMPLATE 1: Minimal Professional (clean white)
