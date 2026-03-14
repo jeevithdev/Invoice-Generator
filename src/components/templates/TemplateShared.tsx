@@ -95,8 +95,25 @@ export function TermsSection({ invoice }: { invoice: InvoiceData }) {
   if (!invoice.customization.showTerms || !invoice.terms) return null;
   return (
     <div>
-      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Terms & Conditions</p>
+      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Terms &amp; Conditions</p>
       <p className="text-xs text-gray-600">{invoice.terms}</p>
+    </div>
+  );
+}
+
+export function SignatureSection({ invoice }: { invoice: InvoiceData }) {
+  const accent = invoice.customization.accentColor;
+  return (
+    <div className="mt-12 flex justify-end">
+      <div className="text-center">
+        <div
+          className="w-48 border-t-2 pt-2 text-xs text-gray-500"
+          style={{ borderColor: accent }}
+        >
+          Authorized Signature
+        </div>
+        <p className="text-xs text-gray-400 mt-1">{invoice.company.name}</p>
+      </div>
     </div>
   );
 }
