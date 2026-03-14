@@ -545,6 +545,7 @@ export function ExportToolbar() {
   );
 
   const handleReset = useCallback(() => {
+    toast.dismiss('reset-confirm');
     toast((t) => (
       <div>
         <p className="text-sm font-medium mb-2 text-slate-800">Reset to default invoice?</p>
@@ -567,7 +568,7 @@ export function ExportToolbar() {
           </button>
         </div>
       </div>
-    ), { duration: 5000 });
+    ), { duration: 5000, id: 'reset-confirm' });
   }, [resetInvoice]);
 
   return (
