@@ -1,75 +1,42 @@
-# InvoiceCraft — Professional Invoice Generator
+InvoiceCraft
+A simple and professional invoice generator built with Next.js. Create, customize, and download invoices as PDFs directly in your browser.
 
-A fully-featured invoice generator built with **Next.js 16**, **TailwindCSS v4**, and **Zustand**.
+✨ Key Features
+6 Templates: Minimal, Corporate, Grid, Bold, Elegant, and Dark.
 
-## Features
+GST Ready: Supports GST/IGST calculations and discounts.
 
-- 6 professional invoice templates (Minimal, Corporate, Grid, Bold, Elegant, Dark)
-- GST / IGST tax calculations with discount support
-- One-click PDF export and browser print
-- Logo upload, accent color picker, column customization
-- Save / Load invoices as JSON
-- Indian number-to-words amount conversion
-- Fully client-side — no backend required
+Custom Branding: Upload your logo and change accent colors.
 
-## Tech Stack
+Data Control: Save your invoices as JSON files to edit them later.
 
-- **Next.js 16** (App Router, Turbopack)
-- **TailwindCSS v4**
-- **Zustand v5** (persisted state)
-- **html2pdf.js** (PDF export)
-- **lucide-react** (icons)
+Privacy: Everything stays in your browser. No data is sent to a server.
 
-## Getting Started
+🛠️ Tech Stack
+Framework: Next.js (App Router)
 
-```bash
+Styling: Tailwind CSS
+
+State: Zustand
+
+PDFs: html2pdf.js
+
+🚀 Quick Start
+1. Clone and Install
+
+Bash
+git clone https://github.com/jeevithdev/Invoice-Generator.git
+cd Invoice-Generator
 npm install
+2. Run Locally
+
+Bash
 npm run dev
-```
+Open http://localhost:3000 to start generating invoices.
 
-Open [http://localhost:3000](http://localhost:3000).
+📝 How to Use
+Fill Details: Enter your business info, client details, and items.
 
-## Production Build
+Customize: Choose a template and your brand color.
 
-```bash
-npm run build
-npm run start
-```
-
-## Deploy
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
-
-The app is fully static-compatible and can be deployed to Vercel, Netlify, or any Node.js host.
-
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Download: Click the "Download PDF" button to save your invoice.
