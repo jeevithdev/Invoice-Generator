@@ -23,14 +23,11 @@ PDFs: html2pdf.js
 
 🚀 Quick Start
 1. Clone and Install
-
-Bash
 git clone https://github.com/jeevithdev/Invoice-Generator.git
 cd Invoice-Generator
 npm install
 2. Run Locally
 
-Bash
 npm run dev
 Open http://localhost:3000 to start generating invoices.
 
