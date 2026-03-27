@@ -102,11 +102,35 @@ export function CustomizationPanel() {
               onChange={(e) => updateCustomization({ fontFamily: e.target.value })}
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
             >
-              <option value="inter">Inter (Default)</option>
-              <option value="sans-serif">Sans-Serif</option>
-              <option value="georgia">Georgia (Serif)</option>
-              <option value="courier">Courier (Monospace)</option>
-              <option value="poppins">Poppins</option>
+              <optgroup label="Sans-Serif (Modern)">
+                <option value="inter">Inter (Default)</option>
+                <option value="system-ui">System UI</option>
+                <option value="poppins">Poppins</option>
+                <option value="roboto">Roboto</option>
+                <option value="open-sans">Open Sans</option>
+                <option value="lato">Lato</option>
+                <option value="montserrat">Montserrat</option>
+                <option value="raleway">Raleway</option>
+                <option value="nunito">Nunito</option>
+              </optgroup>
+              <optgroup label="Serif (Traditional)">
+                <option value="georgia">Georgia</option>
+                <option value="times-new-roman">Times New Roman</option>
+                <option value="palatino">Palatino</option>
+                <option value="book-antiqua">Book Antiqua</option>
+                <option value="cambria">Cambria</option>
+              </optgroup>
+              <optgroup label="Slab Serif (Professional)">
+                <option value="roboto-slab">Roboto Slab</option>
+                <option value="merriweather">Merriweather</option>
+                <option value="source-serif-pro">Source Serif Pro</option>
+                <option value="playfair-display">Playfair Display</option>
+              </optgroup>
+              <optgroup label="Monospace (Data)">
+                <option value="courier">Courier</option>
+                <option value="courier-new">Courier New</option>
+                <option value="menlo">Menlo</option>
+              </optgroup>
             </select>
           </div>
           <RadioGroup

@@ -23,11 +23,28 @@ const TABS: { id: PanelTab; label: string; icon: React.ReactNode }[] = [
 ];
 
 const FONT_MAP: Record<string, string> = {
-  inter: 'Inter, system-ui, sans-serif',
-  'sans-serif': 'ui-sans-serif, system-ui, sans-serif',
-  georgia: 'Georgia, "Times New Roman", serif',
-  courier: '"Courier New", Courier, monospace',
-  poppins: 'Poppins, Inter, sans-serif',
+  'inter': 'var(--font-inter), Inter, system-ui, sans-serif',
+  'system-ui': 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+  'poppins': 'var(--font-poppins), Poppins, sans-serif',
+  'roboto': 'var(--font-roboto), Roboto, sans-serif',
+  'open-sans': 'var(--font-open-sans), "Open Sans", sans-serif',
+  'lato': 'var(--font-lato), Lato, sans-serif',
+  'montserrat': 'var(--font-montserrat), Montserrat, sans-serif',
+  'raleway': 'var(--font-raleway), Raleway, sans-serif',
+  'nunito': 'var(--font-nunito), Nunito, sans-serif',
+  'georgia': 'Georgia, "Times New Roman", Times, serif',
+  'times-new-roman': '"Times New Roman", Times, Georgia, serif',
+  'palatino': 'Palatino, "Palatino Linotype", "Book Antiqua", serif',
+  'book-antiqua': '"Book Antiqua", Palatino, serif',
+  'cambria': 'Cambria, "Book Antiqua", serif',
+  'roboto-slab': 'var(--font-roboto-slab), "Roboto Slab", serif',
+  'merriweather': 'var(--font-merriweather), Merriweather, Georgia, serif',
+  'source-serif-pro': 'var(--font-source-serif-pro), "Source Serif Pro", Georgia, serif',
+  'playfair-display': 'var(--font-playfair-display), "Playfair Display", Georgia, serif',
+  'courier': '"Courier New", Courier, monospace',
+  'courier-new': '"Courier New", Courier, monospace',
+  'menlo': 'Menlo, Monaco, "Courier New", monospace',
+  'sans-serif': 'ui-sans-serif, system-ui, -apple-system, sans-serif',
 };
 
 // Tailwind v4 compiles text-* and rounded-* as var(--text-*) / var(--radius-*).
