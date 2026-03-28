@@ -29,7 +29,6 @@ npm install
 2. Run Locally
 
 npm run dev
-Open http://localhost:3000 to start generating invoices.
 
 📝 How to Use
 Fill Details: Enter your business info, client details, and items.
